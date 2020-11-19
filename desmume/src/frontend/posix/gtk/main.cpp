@@ -67,9 +67,7 @@
 	#include "gdbstub.h"
 #endif
 
-#if defined(HAVE_LIBOSMESA) || defined(HAVE_GL_GLX)
-	#define HAVE_OPENGL
-#endif
+#define HAVE_OPENGL
 
 #ifdef HAVE_OPENGL
 	#include <GL/gl.h>
@@ -77,10 +75,10 @@
 	#include "OGLRender_3_2.h"
 #endif
 
-#if defined(HAVE_GL_GLX)
-	#include "glx_3Demu.h"
-#elif defined(HAVE_LIBOSMESA)
+#if defined(HAVE_LIBOSMESA)
 	#include "osmesa_3Demu.h"
+#else
+	#include "sdl_3Demu.h"
 #endif
 
 #include "config.h"
@@ -2373,15 +2371,15 @@ static void GraphicsSettingsDialog() {
 			{
 #if !defined(HAVE_OPENGL)
 				sel3DCore = RENDERID_SOFTRASTERIZER;
-#elif defined(HAVE_GL_GLX)
-				if (!is_glx_initialized())
-				{
-					init_glx_3Demu();
-				}
 #elif defined(HAVE_LIBOSMESA)
 				if (!is_osmesa_initialized())
 				{
 					init_osmesa_3Demu();
+				}
+#else
+				if (!is_sdl_initialized())
+				{
+					init_sdl_3Demu();
 				}
 #endif
 			}
@@ -3511,15 +3509,15 @@ common_gtk_main( class configured_features *my_config)
 	{
 #if !defined(HAVE_OPENGL)
 		core = RENDERID_SOFTRASTERIZER;
-#elif defined(HAVE_GL_GLX)
-		if (!is_glx_initialized())
-		{
-			init_glx_3Demu();
-		}
 #elif defined(HAVE_LIBOSMESA)
 		if (!is_osmesa_initialized())
 		{
 			init_osmesa_3Demu();
+		}
+#else
+		if (!is_sdl_initialized())
+		{
+			init_sdl_3Demu();
 		}
 #endif
 	}
@@ -3591,10 +3589,10 @@ common_gtk_main( class configured_features *my_config)
 
     desmume_free();
 
-#if defined(HAVE_GL_GLX)
-	deinit_glx_3Demu();
-#elif defined(HAVE_LIBOSMESA)
+#if defined(HAVE_LIBOSMESA)
 	deinit_osmesa_3Demu();
+#else
+	deinit_sdl_3Demu();
 #endif
 
     /* Unload joystick */
