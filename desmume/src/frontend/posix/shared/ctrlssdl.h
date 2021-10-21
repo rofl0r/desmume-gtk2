@@ -91,7 +91,7 @@ struct ctrls_event_config {
   int sdl_quit;
   int boost;
   int fake_mic;
-#ifdef HAVE_GL_GL_H
+#if 0 /* #ifdef HAVE_GL_GL_H */
   GLuint *screen_texture;
   void (*resize_cb)(u16 width, u16 height, GLuint *screen_texture);
 #else

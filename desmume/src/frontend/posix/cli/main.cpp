@@ -36,6 +36,9 @@
 #define INCLUDE_OPENGL_2D
 #endif
 
+/* the old way of using GL directly is broken with SDL2 */
+#undef INCLUDE_OPENGL_2D
+
 #ifdef INCLUDE_OPENGL_2D
 #include <GL/gl.h>
 #include <GL/glu.h>
