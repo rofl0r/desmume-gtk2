@@ -34,7 +34,7 @@ executable('desmume',
   install: true,
 )
 
-install_data('org.desmume.DeSmuME.desktop', install_dir: join_paths(get_option('datadir'), 'applications'))
+install_data('desmume.desktop', install_dir: join_paths(get_option('datadir'), 'applications'))
 install_data('org.desmume.DeSmuME.metainfo.xml', install_dir: join_paths(get_option('datadir'), 'metainfo'))
 install_data('DeSmuME.xpm', install_dir: join_paths(get_option('datadir'), 'pixmaps'))
 install_man('doc/desmume.1')

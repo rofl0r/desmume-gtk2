@@ -7,7 +7,7 @@
   <metadata_license>CC0-1.0</metadata_license>
   <developer_name>DeSmuME Team</developer_name>
   <update_contact>linkmauve_AT_linkmauve.fr</update_contact>
-  <launchable type="desktop-id">org.desmume.DeSmuME.desktop</launchable>
+  <launchable type="desktop-id">desmume.desktop</launchable>
 
   <url type="homepage">http://desmume.org</url>
   <url type="bugtracker">https://github.com/TASVideos/desmume/issues</url>
