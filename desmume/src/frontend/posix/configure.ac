@@ -70,6 +70,15 @@ else
   AC_MSG_ERROR([sdl is required to build desmume])
 fi
 
+dnl - Check for the OpenGL includes
+AC_CHECK_HEADERS([GL/gl.h],
+		 [AC_CHECK_HEADERS([GL/glu.h], [have_gl_h=yes LIBS="$LIBS -lGL -lGLU"], [have_gl_h=no])],
+		 [have_gl_h=no])
+if test "have_gl_h" = "no" ; then
+	AC_MSG_WARN([Building without GL support because of missing headers.])
+fi
+AM_CONDITIONAL([HAVE_GL], [test "${have_gl_h}" = "yes"])
+
 dnl - if --enable-osmesa is used, check for it
 AC_ARG_ENABLE([osmesa],
                [AC_HELP_STRING([--enable-osmesa], [use off-screen mesa])],
@@ -78,6 +87,7 @@ AC_ARG_ENABLE([osmesa],
 
 if test "x$osmesa" = "xyes" ; then
 	AC_CHECK_LIB(dl, main)
+	AC_CHECK_LIB([GL], main)
 	AC_CHECK_LIB(OSMesa, main,[
 		useosmesa=yes
 		AC_DEFINE(HAVE_LIBOSMESA)

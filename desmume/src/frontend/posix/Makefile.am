@@ -211,6 +211,10 @@ endif
 
 libdesmume_a_SOURCES += shared/desmume_config.cpp shared/desmume_config.h
 
+if HAVE_GL
+libdesmume_a_SOURCES += ../../OGLRender.cpp ../../OGLRender_3_2.cpp
+endif
+
 if HAVE_OPENAL
 libdesmume_a_SOURCES += shared/mic_openal.cpp
 else
