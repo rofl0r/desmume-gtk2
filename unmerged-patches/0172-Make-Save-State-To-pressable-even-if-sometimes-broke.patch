@@ -1,0 +1,34 @@
+From 91b2e22894b7fbca3bc66d025de5961ecd03b378 Mon Sep 17 00:00:00 2001
+From: Anish Moorthy <anlsh@protonmail.com>
+Date: Tue, 14 Sep 2021 19:02:28 -0400
+Subject: [PATCH 172/194] Make "Save State To" pressable, even if sometimes
+ broken
+
+---
+ desmume/src/frontend/posix/gtk/main.cpp | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/desmume/src/frontend/posix/gtk/main.cpp b/desmume/src/frontend/posix/gtk/main.cpp
+index 18c678f9..d3c7f18e 100644
+--- a/desmume/src/frontend/posix/gtk/main.cpp
++++ b/desmume/src/frontend/posix/gtk/main.cpp
+@@ -200,7 +200,7 @@ static const GActionEntry app_entries[] = {
+     { "run",           Launch },
+     { "pause",         Pause },
+     { "reset",         Reset },
+-    { "savestateto",   SaveStateDialog },
++    { "save_state_to",   SaveStateDialog },
+     { "loadstatefrom", LoadStateDialog },
+     { "savestate",     MenuSave, "u" },
+     { "loadstate",     MenuLoad, "u" },
+@@ -647,6 +647,7 @@ void Launch(GSimpleAction *action, GVariant *parameter, gpointer user_data)
+     g_simple_action_set_enabled(G_SIMPLE_ACTION(g_action_map_lookup_action(G_ACTION_MAP(pApp), "printscreen")), TRUE);
+     g_simple_action_set_enabled(G_SIMPLE_ACTION(g_action_map_lookup_action(G_ACTION_MAP(pApp), "exportbackup")), TRUE);
+     g_simple_action_set_enabled(G_SIMPLE_ACTION(g_action_map_lookup_action(G_ACTION_MAP(pApp), "importbackup")), TRUE);
++    g_simple_action_set_enabled(G_SIMPLE_ACTION(g_action_map_lookup_action(G_ACTION_MAP(pApp), "save_state_to")), TRUE);
+ 
+     //pause = gtk_bin_get_child(GTK_BIN(gtk_ui_manager_get_widget(ui_manager, "/ToolBar/pause")));
+     //gtk_widget_grab_focus(pause);
+-- 
+2.31.1
+

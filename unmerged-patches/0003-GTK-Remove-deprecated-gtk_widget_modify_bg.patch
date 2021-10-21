@@ -1,0 +1,36 @@
+From 4c53f6296795c8edd2f2594edfcb01705b9648c0 Mon Sep 17 00:00:00 2001
+From: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>
+Date: Sat, 29 Aug 2020 05:12:59 +0200
+Subject: [PATCH 003/194] GTK: Remove deprecated gtk_widget_modify_bg()
+
+If we want to change the style of a widget, we should use CSS nowadays.
+---
+ desmume/src/frontend/posix/gtk/main.cpp | 5 -----
+ 1 file changed, 5 deletions(-)
+
+diff --git a/desmume/src/frontend/posix/gtk/main.cpp b/desmume/src/frontend/posix/gtk/main.cpp
+index bb492075..e68ba72b 100644
+--- a/desmume/src/frontend/posix/gtk/main.cpp
++++ b/desmume/src/frontend/posix/gtk/main.cpp
+@@ -901,9 +901,6 @@ static void ToggleFullscreen(GtkToggleAction *action)
+   config.window_fullscreen = gtk_toggle_action_get_active(action);
+   if (config.window_fullscreen)
+   {
+-    GdkColor black = {0, 0, 0, 0};
+-    gtk_widget_modify_bg(pDrawingArea, GTK_STATE_NORMAL, &black);
+-
+     gtk_widget_hide(pMenuBar);
+     gtk_widget_hide(pToolBar);
+     gtk_widget_hide(pStatusBar);
+@@ -914,8 +911,6 @@ static void ToggleFullscreen(GtkToggleAction *action)
+   }
+   else
+   {
+-    gtk_widget_modify_bg(pDrawingArea, GTK_STATE_NORMAL, NULL);
+-
+     if (config.view_menu) {
+       gtk_widget_show(pMenuBar);
+     }
+-- 
+2.31.1
+

@@ -1,0 +1,35 @@
+From d680c4be51889ee6962208d1af695ffb3b0d1281 Mon Sep 17 00:00:00 2001
+From: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>
+Date: Sat, 29 Aug 2020 23:23:02 +0200
+Subject: [PATCH 012/194] GTK: Use modern GDK accessors to its Cairo context
+
+---
+ desmume/src/frontend/posix/gtk/main.cpp | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/desmume/src/frontend/posix/gtk/main.cpp b/desmume/src/frontend/posix/gtk/main.cpp
+index 11966de4..7caeff75 100644
+--- a/desmume/src/frontend/posix/gtk/main.cpp
++++ b/desmume/src/frontend/posix/gtk/main.cpp
+@@ -1557,7 +1557,8 @@ static gboolean ExposeDrawingArea (GtkWidget *widget, GdkEventExpose *event, gpo
+ 	hratio = MIN(hratio, vratio);
+ 	vratio = hratio;
+ 
+-	cairo_t* cr = gdk_cairo_create(window);
++	GdkDrawingContext *context = gdk_window_begin_draw_frame(window, gdk_window_get_clip_region(window));
++	cairo_t* cr = gdk_drawing_context_get_cairo_context(context);
+ 
+ 	// Scale to window size at center of area
+ 	cairo_translate(cr, daW / 2, daH / 2);
+@@ -1583,7 +1584,7 @@ static gboolean ExposeDrawingArea (GtkWidget *widget, GdkEventExpose *event, gpo
+ 	cairo_matrix_scale(&nds_screen.touch_matrix, (double)dstScale / 2, (double)dstScale / 2);
+ 	cairo_matrix_invert(&nds_screen.touch_matrix);
+ 
+-	cairo_destroy(cr);
++	gdk_window_end_draw_frame(window, context);
+ 	draw_count++;
+ 
+ 	return TRUE;
+-- 
+2.31.1
+

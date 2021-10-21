@@ -1,0 +1,24 @@
+From 64da66f37b245dccac694096b47648af16dd2339 Mon Sep 17 00:00:00 2001
+From: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>
+Date: Thu, 29 Oct 2020 20:56:11 +0100
+Subject: [PATCH 040/194] GTK: Disable deprecated symbols altogether
+
+---
+ desmume/src/frontend/posix/gtk/meson.build | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/desmume/src/frontend/posix/gtk/meson.build b/desmume/src/frontend/posix/gtk/meson.build
+index 38995219..d1bdd9f4 100644
+--- a/desmume/src/frontend/posix/gtk/meson.build
++++ b/desmume/src/frontend/posix/gtk/meson.build
+@@ -31,6 +31,7 @@ executable('desmume',
+   dependencies: gtk_dependencies,
+   include_directories: includes,
+   link_with: libdesmume,
++  cpp_args: ['-DGTK_DISABLE_DEPRECATED'],
+   install: true,
+ )
+ 
+-- 
+2.31.1
+

@@ -1,0 +1,170 @@
+From 626d5b4d36ed82715fbadeb5f2aa2b842f85ae99 Mon Sep 17 00:00:00 2001
+From: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>
+Date: Thu, 10 Sep 2020 01:12:16 +0200
+Subject: [PATCH 033/194] GTK: Replace the logo with a SVG version
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+This makes it render crisp on desktop environments which use an icon
+size bigger than 32×32, such as GNOME.
+---
+ desmume/src/frontend/posix/gtk/DeSmuME.svg | 15 +++++++
+ desmume/src/frontend/posix/gtk/DeSmuME.xpm | 50 ----------------------
+ desmume/src/frontend/posix/gtk/Makefile.am |  4 +-
+ desmume/src/frontend/posix/gtk/main.cpp    | 10 +----
+ desmume/src/frontend/posix/gtk/meson.build |  2 +-
+ 5 files changed, 20 insertions(+), 61 deletions(-)
+ create mode 100644 desmume/src/frontend/posix/gtk/DeSmuME.svg
+ delete mode 100644 desmume/src/frontend/posix/gtk/DeSmuME.xpm
+
+diff --git a/desmume/src/frontend/posix/gtk/DeSmuME.svg b/desmume/src/frontend/posix/gtk/DeSmuME.svg
+new file mode 100644
+index 00000000..d9d9d30f
+--- /dev/null
++++ b/desmume/src/frontend/posix/gtk/DeSmuME.svg
+@@ -0,0 +1,15 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 32 32">
++ <linearGradient id="a" x1="0" x2="0" y1="2" y2="30" gradientUnits="userSpaceOnUse">
++  <stop offset="0" stop-color="#f6f6fb"/>
++  <stop offset="1" stop-color="#8080c0"/>
++ </linearGradient>
++ <path fill="#000" d="M3 0 H 23 V 20 H 26 V 32 H 8 V 22 H 5 V 15 H 0 V 2 H 3 Z"/>
++ <path fill="url(#a)" d="M5 2 V 4 H 2 V 13 H 7 V 2 H 5 Z M4 5 H 5 V 12 H 4 V 5 Z"/>
++ <path fill="url(#a)" d="M9 2 H 14 v 1 h -3 v 1 h 3 V 5 h -3 v 7 h 1 V 6 h 2 V 13 H 9 Z"/>
++ <path fill="url(#a)" d="M16 2 h 5 v 1 h -3 v 1 h 3 v 9 H 16 V 6 h 2 v 6 h 1 V 5 h -3 Z"/>
++ <path fill="url(#a)" d="M7 14 h 8 v 6 h -2 v -5 h -1 v 5 H 10 V 15 H 9 v 5 H 7 Z"/>
++ <path fill="url(#a)" d="M16 14 h 2 v 5 h 1 v -5 h 2 v 6 h -5 Z"/>
++ <path fill="url(#a)" d="M19 22 h 5 v 1 h -3 v 1 h 3 v 1 h -3 v 4 h 1 v -3 h 2 v 4 h -5 Z"/>
++ <path fill="url(#a)" d="M10 22 h 8 v 8 h -2 v -7 h -1 v 7 h -2 v -7 h -1 v 7 H 10 Z"/>
++</svg>
+diff --git a/desmume/src/frontend/posix/gtk/DeSmuME.xpm b/desmume/src/frontend/posix/gtk/DeSmuME.xpm
+deleted file mode 100644
+index d1ce2762..00000000
+--- a/desmume/src/frontend/posix/gtk/DeSmuME.xpm
++++ /dev/null
+@@ -1,50 +0,0 @@
+-/* XPM */
+-static const char * DeSmuME_xpm[] = {
+-"32 32 15 1",
+-" 	c None",
+-".	c #000000",
+-"+	c #F6F6FB",
+-"@	c #ECECF6",
+-"#	c #E2E2F1",
+-"$	c #D8D8EC",
+-"%	c #CFCFE7",
+-"&	c #C5C5E2",
+-"*	c #BBBBDE",
+-"=	c #B1B1D9",
+-"-	c #A8A8D4",
+-";	c #9E9ECF",
+-">	c #9494CA",
+-",	c #8A8AC5",
+-"'	c #8080C0",
+-"   ....................         ",
+-"   ....................         ",
+-".....++..+++++..+++++..         ",
+-".....++..++.....++.....         ",
+-"..@@@@@..@@@@@..@@@@@..         ",
+-"..@@.@@..@@........@@..         ",
+-"..##.##..##.##..##.##..         ",
+-"..##.##..##.##..##.##..         ",
+-"..$$.$$..$$.$$..$$.$$..         ",
+-"..$$.$$..$$.$$..$$.$$..         ",
+-"..%%.%%..%%.%%..%%.%%..         ",
+-"..%%.%%..%%.%%..%%.%%..         ",
+-"..&&&&&..&&&&&..&&&&&..         ",
+-".......................         ",
+-".......********.**.**..         ",
+-"     ..==.==.==.==.==..         ",
+-"     ..==.==.==.==.==..         ",
+-"     ..--.--.--.--.--..         ",
+-"     ..--.--.--.--.--..         ",
+-"     ..;;.;;.;;.;;;;;..         ",
+-"     .....................      ",
+-"     .....................      ",
+-"        ..>>>>>>>>.>>>>>..      ",
+-"        ..>>.>>.>>.>>.....      ",
+-"        ..,,.,,.,,.,,,,,..      ",
+-"        ..,,.,,.,,.,,.....      ",
+-"        ..''.''.''.''.''..      ",
+-"        ..''.''.''.''.''..      ",
+-"        ..''.''.''.''.''..      ",
+-"        ..''.''.''.'''''..      ",
+-"        ..................      ",
+-"        ..................      "};
+diff --git a/desmume/src/frontend/posix/gtk/Makefile.am b/desmume/src/frontend/posix/gtk/Makefile.am
+index 76a206c1..75ecb9be 100644
+--- a/desmume/src/frontend/posix/gtk/Makefile.am
++++ b/desmume/src/frontend/posix/gtk/Makefile.am
+@@ -6,8 +6,8 @@ AM_CPPFLAGS += $(SDL_CFLAGS) $(GTK_CFLAGS) $(GTHREAD_CFLAGS) $(ALSA_CFLAGS) $(LI
+ Applicationsdir = $(datadir)/applications
+ Applications_DATA = desmume.desktop
+ pixmapdir = $(datadir)/pixmaps
+-pixmap_DATA = DeSmuME.xpm
+-EXTRA_DIST = DeSmuME.xpm desmume.desktop
++pixmap_DATA = DeSmuME.svg
++EXTRA_DIST = DeSmuME.svg desmume.desktop
+ bin_PROGRAMS = desmume
+ desmume_SOURCES = \
+ 	avout.h \
+diff --git a/desmume/src/frontend/posix/gtk/main.cpp b/desmume/src/frontend/posix/gtk/main.cpp
+index b2f00349..2468a4be 100644
+--- a/desmume/src/frontend/posix/gtk/main.cpp
++++ b/desmume/src/frontend/posix/gtk/main.cpp
+@@ -88,8 +88,6 @@
+ 
+ #include "config.h"
+ 
+-#include "DeSmuME.xpm"
+-
+ #undef GPOINTER_TO_INT
+ #define GPOINTER_TO_INT(p) ((gint)  (glong) (p))
+ 
+@@ -1515,8 +1513,6 @@ static inline void UpdateStatusBar (const char *message)
+ 
+ static void About(GSimpleAction *action, GVariant *parameter, gpointer user_data)
+ {
+-    GdkPixbuf * pixbuf = gdk_pixbuf_new_from_xpm_data(DeSmuME_xpm);
+-
+     static const gchar *authors[] = {
+     	"yopyop (original author)",
+     	"DeSmuME team",
+@@ -1527,12 +1523,10 @@ static void About(GSimpleAction *action, GVariant *parameter, gpointer user_data
+             "program-name", "DeSmuME",
+             "version", EMU_DESMUME_VERSION_STRING() + 1, // skip space
+             "website", "http://desmume.org",
+-            "logo", pixbuf,
++            "logo-icon-name", "DeSmuME",
+             "comments", "Nintendo DS emulator based on work by Yopyop",
+             "authors", authors,
+             NULL);
+-
+-    g_object_unref(pixbuf);
+ }
+ 
+ static void ToggleMenuVisible(GSimpleAction *action, GVariant *parameter, gpointer user_data)
+@@ -3918,7 +3912,7 @@ common_gtk_main(GApplication *app, gpointer user_data)
+     pWindow = gtk_application_window_new(GTK_APPLICATION(app));
+     gtk_window_set_title(GTK_WINDOW(pWindow), "DeSmuME");
+     gtk_window_set_resizable(GTK_WINDOW (pWindow), TRUE);
+-    gtk_window_set_icon(GTK_WINDOW (pWindow), gdk_pixbuf_new_from_xpm_data(DeSmuME_xpm));
++    gtk_window_set_icon_name(GTK_WINDOW (pWindow), "DeSmuME");
+ 
+     g_signal_connect(G_OBJECT(pWindow), "destroy", G_CALLBACK(DoQuit), NULL);
+     g_signal_connect(G_OBJECT(pWindow), "key_press_event", G_CALLBACK(Key_Press), NULL);
+diff --git a/desmume/src/frontend/posix/gtk/meson.build b/desmume/src/frontend/posix/gtk/meson.build
+index 914c495c..1433736b 100644
+--- a/desmume/src/frontend/posix/gtk/meson.build
++++ b/desmume/src/frontend/posix/gtk/meson.build
+@@ -35,4 +35,4 @@ executable('desmume',
+ )
+ 
+ install_data('desmume.desktop', install_dir: get_option('datadir') / 'applications')
+-install_data('DeSmuME.xpm', install_dir: get_option('datadir') / 'pixmaps')
++install_data('DeSmuME.svg', install_dir: get_option('datadir') / 'pixmaps')
+-- 
+2.31.1
+

@@ -1,0 +1,47 @@
+From ba92804d9fe2e0a5b4155374523b656315e33acc Mon Sep 17 00:00:00 2001
+From: davg-qqq <64741034+davg-qqq@users.noreply.github.com>
+Date: Mon, 21 Sep 2020 00:11:25 +0200
+Subject: [PATCH 028/194] GTK: Update autotools config to use gtk3
+
+This will depend on 3.24 as this is the only version I have available.
+If someone else confirms it works on an older version we can lower it.
+---
+ desmume/src/frontend/posix/configure.ac    | 4 ++--
+ desmume/src/frontend/posix/gtk/meson.build | 2 +-
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/desmume/src/frontend/posix/configure.ac b/desmume/src/frontend/posix/configure.ac
+index 95f2fabb..f7ea9c43 100644
+--- a/desmume/src/frontend/posix/configure.ac
++++ b/desmume/src/frontend/posix/configure.ac
+@@ -138,7 +138,7 @@ dnl - Check for GTK and/or libglade
+ FOUND_GLIB=no
+ HAVE_ALSA=no
+ GLIB_VER=2.8
+-GTK_VER=2.14
++GTK_VER=3.24
+ 
+ PKG_CHECK_MODULES(GLIB,
+                   glib-2.0 >= $GLIB_VER,
+@@ -146,7 +146,7 @@ PKG_CHECK_MODULES(GLIB,
+                   FOUND_GLIB=no)
+ 
+ PKG_CHECK_MODULES(GTK,
+-                  gtk+-2.0 >= $GTK_VER,
++                  gtk+-3.0 >= $GTK_VER,
+                   HAVE_GTK=yes,
+                   HAVE_GTK=no)
+ AC_SUBST(GTK_CFLAGS)
+diff --git a/desmume/src/frontend/posix/gtk/meson.build b/desmume/src/frontend/posix/gtk/meson.build
+index a920416b..914c495c 100644
+--- a/desmume/src/frontend/posix/gtk/meson.build
++++ b/desmume/src/frontend/posix/gtk/meson.build
+@@ -1,4 +1,4 @@
+-dep_gtk3 = dependency('gtk+-3.0')
++dep_gtk3 = dependency('gtk+-3.0', version: '>=3.24')
+ dep_x11 = dependency('x11')
+ 
+ gtk_dependencies = dependencies + [dep_gtk3, dep_x11]
+-- 
+2.31.1
+

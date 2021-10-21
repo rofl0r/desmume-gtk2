@@ -1,0 +1,43 @@
+From c1efe4f4750bc6194f13e7fc8d898baf76997e79 Mon Sep 17 00:00:00 2001
+From: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>
+Date: Sat, 29 Aug 2020 13:01:38 +0200
+Subject: [PATCH 009/194] GTK: Remove usage of deprecated GtkMisc
+
+---
+ desmume/src/frontend/posix/gtk/main.cpp | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/desmume/src/frontend/posix/gtk/main.cpp b/desmume/src/frontend/posix/gtk/main.cpp
+index d1c3fec0..f8f4feb6 100644
+--- a/desmume/src/frontend/posix/gtk/main.cpp
++++ b/desmume/src/frontend/posix/gtk/main.cpp
+@@ -2268,7 +2268,7 @@ static void GraphicsSettingsDialog() {
+ 
+ 	// 3D Core
+ 	gsKey = gtk_label_new("3D Core:");
+-	gtk_misc_set_alignment(GTK_MISC(gsKey), 0.0, 0.5);
++	gtk_label_set_yalign(GTK_LABEL(gsKey), 0.5);
+ 	gtk_table_attach(GTK_TABLE(wTable), gsKey, 0, 1, 0, 1,
+ 			static_cast<GtkAttachOptions>(GTK_EXPAND | GTK_FILL),
+ 			static_cast<GtkAttachOptions>(GTK_EXPAND | GTK_FILL), 5, 0);
+@@ -2287,7 +2287,7 @@ static void GraphicsSettingsDialog() {
+ 
+ 	// 3D Texture Upscaling
+ 	gsKey = gtk_label_new("3D Texture Upscaling:");
+-	gtk_misc_set_alignment(GTK_MISC(gsKey), 0.0, 0.5);
++	gtk_label_set_yalign(GTK_LABEL(gsKey), 0.5);
+ 	gtk_table_attach(GTK_TABLE(wTable), gsKey, 0, 1, 1, 2,
+ 			static_cast<GtkAttachOptions>(GTK_EXPAND | GTK_FILL),
+ 			static_cast<GtkAttachOptions>(GTK_EXPAND | GTK_FILL), 5, 0);
+@@ -2323,7 +2323,7 @@ static void GraphicsSettingsDialog() {
+ #ifdef HAVE_OPENGL
+ 	// OpenGL Multisample
+ 	gsKey = gtk_label_new("Multisample Antialiasing (OpenGL):");
+-	gtk_misc_set_alignment(GTK_MISC(gsKey), 0.0, 0.5);
++	gtk_label_set_yalign(GTK_LABEL(gsKey), 0.5);
+ 	gtk_table_attach(GTK_TABLE(wTable), gsKey, 0, 1, 4, 5,
+ 			static_cast<GtkAttachOptions>(GTK_EXPAND | GTK_FILL),
+ 			static_cast<GtkAttachOptions>(GTK_EXPAND | GTK_FILL), 5, 0);
+-- 
+2.31.1
+

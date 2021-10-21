@@ -1,0 +1,43 @@
+From 445579b0530d0e022e74319a2021c6f6ebfac073 Mon Sep 17 00:00:00 2001
+From: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>
+Date: Sat, 19 Dec 2020 04:45:10 +0100
+Subject: [PATCH 109/194] GTK: Use the correct hyphenation for properties
+
+---
+ desmume/src/frontend/posix/gtk/graphics.ui | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/desmume/src/frontend/posix/gtk/graphics.ui b/desmume/src/frontend/posix/gtk/graphics.ui
+index da8bcd7d..44eed71f 100644
+--- a/desmume/src/frontend/posix/gtk/graphics.ui
++++ b/desmume/src/frontend/posix/gtk/graphics.ui
+@@ -97,7 +97,7 @@
+             <child>
+               <object class="GtkCheckButton" id="posterize">
+                 <property name="label" translatable="yes">3D Texture Deposterization</property>
+-                <property name="draw_indicator">True</property>
++                <property name="draw-indicator">True</property>
+               </object>
+               <packing>
+                 <property name="left_attach">0</property>
+@@ -107,7 +107,7 @@
+             <child>
+               <object class="GtkCheckButton" id="smoothing">
+                 <property name="label" translatable="yes">3D Texture Smoothing</property>
+-                <property name="draw_indicator">True</property>
++                <property name="draw-indicator">True</property>
+               </object>
+               <packing>
+                 <property name="left_attach">0</property>
+@@ -117,7 +117,7 @@
+             <child>
+               <object class="GtkCheckButton" id="hc_interpolate">
+                 <property name="label" translatable="yes">High Resolution Color Interpolation (SoftRasterizer)</property>
+-                <property name="draw_indicator">True</property>
++                <property name="draw-indicator">True</property>
+               </object>
+               <packing>
+                 <property name="left_attach">1</property>
+-- 
+2.31.1
+

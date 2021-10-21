@@ -1,0 +1,46 @@
+From d3fda11a0e53e85a66cdfe6076feda60c01ce3a3 Mon Sep 17 00:00:00 2001
+From: thesource <thesourcehim@gmail.com>
+Date: Sat, 27 Feb 2021 18:49:58 +0300
+Subject: [PATCH 103/194] Update menu and config upon save type change
+
+---
+ desmume/src/frontend/posix/gtk/config_opts.h | 1 +
+ desmume/src/frontend/posix/gtk/main.cpp      | 3 +++
+ 2 files changed, 4 insertions(+)
+
+diff --git a/desmume/src/frontend/posix/gtk/config_opts.h b/desmume/src/frontend/posix/gtk/config_opts.h
+index 2d1b121f..151d0f87 100644
+--- a/desmume/src/frontend/posix/gtk/config_opts.h
++++ b/desmume/src/frontend/posix/gtk/config_opts.h
+@@ -65,6 +65,7 @@ OPT(multisampling, bool, false, Config, OpenGLMultisampling)
+ OPT(multisamplingSize, int, 0, Config, OpenGLMultisamplingSize)
+ OPT(command_line_overriding_firmware_language, bool, false, Config, CommandLineOverridingFirmwareLanguage)
+ OPT(firmware_language, int, 1, Config, FirmwareLanguage)
++OPT(savetype, int, 0, Config, SaveType)
+ 
+ /* Audio */
+ OPT(audio_enabled, bool, true, Audio, Enabled)
+diff --git a/desmume/src/frontend/posix/gtk/main.cpp b/desmume/src/frontend/posix/gtk/main.cpp
+index 6ca9b273..bac58372 100644
+--- a/desmume/src/frontend/posix/gtk/main.cpp
++++ b/desmume/src/frontend/posix/gtk/main.cpp
+@@ -2652,6 +2652,8 @@ static void changesavetype(GSimpleAction *action, GVariant *parameter, gpointer
+     else if (strcmp(string, "flash-4m") == 0)
+         savetype = 6;
+     backup_setManualBackupType(savetype);
++    config.savetype=savetype;
++    g_simple_action_set_state(action, parameter);
+ }
+ 
+ static void desmume_gtk_menu_tool_layers(GtkApplication *app)
+@@ -3027,6 +3029,7 @@ common_gtk_main(GApplication *app, gpointer user_data)
+     desmume_gtk_menu_view_hud(GTK_APPLICATION(app));
+ #endif
+     desmume_gtk_menu_tools(GTK_APPLICATION(app));
++    my_config->savetype=config.savetype;
+     std::string string;
+     switch (my_config->savetype) {
+         case 0:
+-- 
+2.31.1
+

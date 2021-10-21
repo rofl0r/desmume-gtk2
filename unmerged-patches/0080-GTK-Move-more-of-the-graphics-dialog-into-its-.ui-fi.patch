@@ -1,0 +1,331 @@
+From ac507ebdc0d370073186bfa52b43e1fcbb877eaa Mon Sep 17 00:00:00 2001
+From: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>
+Date: Sat, 19 Dec 2020 04:07:07 +0100
+Subject: [PATCH 080/194] GTK: Move more of the graphics dialog into its .ui
+ file
+
+---
+ desmume/src/frontend/posix/gtk/graphics.ui | 252 +++++++++++++--------
+ desmume/src/frontend/posix/gtk/main.cpp    |  21 +-
+ 2 files changed, 159 insertions(+), 114 deletions(-)
+
+diff --git a/desmume/src/frontend/posix/gtk/graphics.ui b/desmume/src/frontend/posix/gtk/graphics.ui
+index fcd678fe..da8bcd7d 100644
+--- a/desmume/src/frontend/posix/gtk/graphics.ui
++++ b/desmume/src/frontend/posix/gtk/graphics.ui
+@@ -1,105 +1,161 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+ <interface>
+   <requires lib="gtk+" version="3.24"/>
+-  <object class="GtkGrid" id="graphics_grid">
+-    <child>
+-      <object class="GtkLabel">
+-        <property name="label" translatable="yes">3D Core:</property>
++  <object class="GtkDialog" id="dialog">
++    <property name="can-focus">False</property>
++    <property name="title" translatable="yes">Emulation Settings</property>
++    <property name="modal">True</property>
++    <property name="type-hint">dialog</property>
++    <child internal-child="vbox">
++      <object class="GtkBox">
++        <property name="can-focus">False</property>
++        <property name="orientation">vertical</property>
++        <property name="spacing">2</property>
++        <child internal-child="action_area">
++          <object class="GtkButtonBox">
++            <property name="can-focus">False</property>
++            <property name="layout-style">end</property>
++            <child>
++              <object class="GtkButton" id="ok">
++                <property name="label" translatable="yes">OK</property>
++                <property name="visible">True</property>
++                <property name="can-focus">True</property>
++                <property name="receives-default">True</property>
++              </object>
++              <packing>
++                <property name="expand">True</property>
++                <property name="fill">True</property>
++                <property name="position">0</property>
++              </packing>
++            </child>
++            <child>
++              <object class="GtkButton" id="cancel">
++                <property name="label" translatable="yes">Cancel</property>
++                <property name="visible">True</property>
++                <property name="can-focus">True</property>
++                <property name="receives-default">True</property>
++              </object>
++              <packing>
++                <property name="expand">True</property>
++                <property name="fill">True</property>
++                <property name="position">1</property>
++              </packing>
++            </child>
++          </object>
++          <packing>
++            <property name="expand">False</property>
++            <property name="fill">False</property>
++            <property name="position">4</property>
++          </packing>
++        </child>
++        <child>
++          <object class="GtkGrid" id="graphics_grid">
++            <child>
++              <object class="GtkLabel">
++                <property name="label" translatable="yes">3D Core:</property>
++              </object>
++              <packing>
++                <property name="left_attach">0</property>
++                <property name="top_attach">0</property>
++              </packing>
++            </child>
++            <child>
++              <object class="GtkComboBoxText" id="core_combo">
++                <items>
++                  <item translatable="yes">Null</item>
++                  <item translatable="yes">SoftRasterizer</item>
++                  <item translatable="yes">OpenGL</item>
++                </items>
++              </object>
++              <packing>
++                <property name="left_attach">1</property>
++                <property name="top_attach">0</property>
++              </packing>
++            </child>
++            <child>
++              <object class="GtkLabel">
++                <property name="label" translatable="yes">3D Texture Upscaling:</property>
++              </object>
++              <packing>
++                <property name="left_attach">0</property>
++                <property name="top_attach">1</property>
++              </packing>
++            </child>
++            <child>
++              <object class="GtkComboBoxText" id="scale">
++                <items>
++                  <item translatable="yes">×1</item>
++                  <item translatable="yes">×2</item>
++                  <item translatable="yes">×4</item>
++                </items>
++              </object>
++              <packing>
++                <property name="left_attach">1</property>
++                <property name="top_attach">1</property>
++              </packing>
++            </child>
++            <child>
++              <object class="GtkCheckButton" id="posterize">
++                <property name="label" translatable="yes">3D Texture Deposterization</property>
++                <property name="draw_indicator">True</property>
++              </object>
++              <packing>
++                <property name="left_attach">0</property>
++                <property name="top_attach">2</property>
++              </packing>
++            </child>
++            <child>
++              <object class="GtkCheckButton" id="smoothing">
++                <property name="label" translatable="yes">3D Texture Smoothing</property>
++                <property name="draw_indicator">True</property>
++              </object>
++              <packing>
++                <property name="left_attach">0</property>
++                <property name="top_attach">3</property>
++              </packing>
++            </child>
++            <child>
++              <object class="GtkCheckButton" id="hc_interpolate">
++                <property name="label" translatable="yes">High Resolution Color Interpolation (SoftRasterizer)</property>
++                <property name="draw_indicator">True</property>
++              </object>
++              <packing>
++                <property name="left_attach">1</property>
++                <property name="top_attach">3</property>
++              </packing>
++            </child>
++            <child>
++              <object class="GtkLabel">
++                <property name="label" translatable="yes">Multisample Antialiasing (OpenGL):</property>
++              </object>
++              <packing>
++                <property name="left_attach">0</property>
++                <property name="top_attach">4</property>
++              </packing>
++            </child>
++            <child>
++              <object class="GtkComboBoxText" id="multisample">
++                <items>
++                  <item translatable="yes">None</item>
++                  <item translatable="yes">2</item>
++                  <item translatable="yes">4</item>
++                  <item translatable="yes">8</item>
++                  <item translatable="yes">16</item>
++                  <item translatable="yes">32</item>
++                </items>
++              </object>
++              <packing>
++                <property name="left_attach">1</property>
++                <property name="top_attach">4</property>
++              </packing>
++            </child>
++          </object>
++        </child>
+       </object>
+-      <packing>
+-        <property name="left_attach">0</property>
+-        <property name="top_attach">0</property>
+-      </packing>
+-    </child>
+-    <child>
+-      <object class="GtkComboBoxText" id="core_combo">
+-        <items>
+-          <item translatable="yes">Null</item>
+-          <item translatable="yes">SoftRasterizer</item>
+-          <item translatable="yes">OpenGL</item>
+-        </items>
+-      </object>
+-      <packing>
+-        <property name="left_attach">1</property>
+-        <property name="top_attach">0</property>
+-      </packing>
+-    </child>
+-    <child>
+-      <object class="GtkLabel">
+-        <property name="label" translatable="yes">3D Texture Upscaling:</property>
+-      </object>
+-      <packing>
+-        <property name="left_attach">0</property>
+-        <property name="top_attach">1</property>
+-      </packing>
+-    </child>
+-    <child>
+-      <object class="GtkComboBoxText" id="scale">
+-        <items>
+-          <item translatable="yes">×1</item>
+-          <item translatable="yes">×2</item>
+-          <item translatable="yes">×4</item>
+-        </items>
+-      </object>
+-      <packing>
+-        <property name="left_attach">1</property>
+-        <property name="top_attach">1</property>
+-      </packing>
+-    </child>
+-    <child>
+-      <object class="GtkCheckButton" id="posterize">
+-        <property name="label" translatable="yes">3D Texture Deposterization</property>
+-        <property name="draw_indicator">True</property>
+-      </object>
+-      <packing>
+-        <property name="left_attach">0</property>
+-        <property name="top_attach">2</property>
+-      </packing>
+-    </child>
+-    <child>
+-      <object class="GtkCheckButton" id="smoothing">
+-        <property name="label" translatable="yes">3D Texture Smoothing</property>
+-        <property name="draw_indicator">True</property>
+-      </object>
+-      <packing>
+-        <property name="left_attach">0</property>
+-        <property name="top_attach">3</property>
+-      </packing>
+-    </child>
+-    <child>
+-      <object class="GtkCheckButton" id="hc_interpolate">
+-        <property name="label" translatable="yes">High Resolution Color Interpolation (SoftRasterizer)</property>
+-        <property name="draw_indicator">True</property>
+-      </object>
+-      <packing>
+-        <property name="left_attach">1</property>
+-        <property name="top_attach">3</property>
+-      </packing>
+-    </child>
+-    <child>
+-      <object class="GtkLabel">
+-        <property name="label" translatable="yes">Multisample Antialiasing (OpenGL):</property>
+-      </object>
+-      <packing>
+-        <property name="left_attach">0</property>
+-        <property name="top_attach">4</property>
+-      </packing>
+-    </child>
+-    <child>
+-      <object class="GtkComboBoxText" id="multisample">
+-        <items>
+-          <item translatable="yes">None</item>
+-          <item translatable="yes">2</item>
+-          <item translatable="yes">4</item>
+-          <item translatable="yes">8</item>
+-          <item translatable="yes">16</item>
+-          <item translatable="yes">32</item>
+-        </items>
+-      </object>
+-      <packing>
+-        <property name="left_attach">1</property>
+-        <property name="top_attach">4</property>
+-      </packing>
+     </child>
++    <action-widgets>
++      <action-widget response="-5">ok</action-widget>
++      <action-widget response="-6">cancel</action-widget>
++    </action-widgets>
+   </object>
+ </interface>
+diff --git a/desmume/src/frontend/posix/gtk/main.cpp b/desmume/src/frontend/posix/gtk/main.cpp
+index 03c56b70..6ca9b273 100644
+--- a/desmume/src/frontend/posix/gtk/main.cpp
++++ b/desmume/src/frontend/posix/gtk/main.cpp
+@@ -1969,25 +1969,14 @@ static void Edit_Joystick_Controls(GSimpleAction *action, GVariant *parameter, g
+ 
+ 
+ static void GraphicsSettingsDialog(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
+-	GtkWidget *gsDialog;
+-	GtkBox *wBox;
++	GtkDialog *dialog;
+ 	GtkGrid *wGrid;
+ 	GtkComboBox *coreCombo, *wScale, *wMultisample;
+ 	GtkToggleButton *wPosterize, *wSmoothing, *wHCInterpolate;
+ 
+-	gsDialog = gtk_dialog_new_with_buttons("Graphics Settings",
+-			GTK_WINDOW(pWindow),
+-			GTK_DIALOG_MODAL,
+-			"_OK",
+-			GTK_RESPONSE_OK,
+-			"_Cancel",
+-			GTK_RESPONSE_CANCEL,
+-			NULL);
+-
+ 	GtkBuilder *builder = gtk_builder_new_from_resource("/org/desmume/DeSmuME/graphics.ui");
+-	wBox = GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(gsDialog)));
++	dialog = GTK_DIALOG(gtk_builder_get_object(builder, "dialog"));
+ 	wGrid = GTK_GRID(gtk_builder_get_object(builder, "graphics_grid"));
+-	gtk_box_pack_start(wBox, GTK_WIDGET(wGrid), TRUE, FALSE, 0);
+ 	coreCombo = GTK_COMBO_BOX(gtk_builder_get_object(builder, "core_combo"));
+ 	wScale = GTK_COMBO_BOX(gtk_builder_get_object(builder, "scale"));
+ 	wMultisample = GTK_COMBO_BOX(gtk_builder_get_object(builder, "multisample"));
+@@ -2023,9 +2012,9 @@ static void GraphicsSettingsDialog(GSimpleAction *action, GVariant *parameter, g
+ 	// SoftRasterizer High Color Interpolation
+ 	gtk_toggle_button_set_active(wHCInterpolate, CommonSettings.GFX3D_HighResolutionInterpolateColor);
+ 
+-	gtk_widget_show_all(gtk_dialog_get_content_area(GTK_DIALOG(gsDialog)));
++	gtk_widget_show_all(gtk_dialog_get_content_area(dialog));
+ 
+-    switch (gtk_dialog_run(GTK_DIALOG(gsDialog))) {
++    switch (gtk_dialog_run(dialog)) {
+     case GTK_RESPONSE_OK:
+     // Start: OK Response block
+     {
+@@ -2093,7 +2082,7 @@ static void GraphicsSettingsDialog(GSimpleAction *action, GVariant *parameter, g
+         break;
+     }
+ 
+-	gtk_widget_destroy(gsDialog);
++	gtk_widget_destroy(GTK_WIDGET(dialog));
+ 
+ }
+ 
+-- 
+2.31.1
+

@@ -1,0 +1,26 @@
+From bfeff3fe661f4ec6e7ab3e0f0477d258ff4480b0 Mon Sep 17 00:00:00 2001
+From: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>
+Date: Wed, 9 Sep 2020 23:53:16 +0200
+Subject: [PATCH 024/194] GTK: Restore content scaling
+
+It had been broken in eabfcb71be1bbe061a6657307b2ed46b836a9703 when
+moving from GtkVBox to GtkBox removed homogeneous=false.
+---
+ desmume/src/frontend/posix/gtk/main.cpp | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/desmume/src/frontend/posix/gtk/main.cpp b/desmume/src/frontend/posix/gtk/main.cpp
+index b86e8fcc..ac12d431 100644
+--- a/desmume/src/frontend/posix/gtk/main.cpp
++++ b/desmume/src/frontend/posix/gtk/main.cpp
+@@ -4225,6 +4225,7 @@ common_gtk_main(GApplication *app, gpointer user_data)
+ 
+     /* Creating the place for showing DS screens */
+     pDrawingArea = gtk_drawing_area_new();
++    gtk_widget_set_vexpand(pDrawingArea, TRUE);
+ 
+     /* This toggle action must not be set active before the pDrawingArea initialization to avoid a GTK warning */
+     g_simple_action_set_state(G_SIMPLE_ACTION(g_action_map_lookup_action(G_ACTION_MAP(app), "gap")), g_variant_new_boolean(config.view_gap));
+-- 
+2.31.1
+

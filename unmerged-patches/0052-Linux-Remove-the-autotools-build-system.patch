@@ -1,0 +1,834 @@
+From 19147a8457f8855da4696ab12f651eea5e7e7e0f Mon Sep 17 00:00:00 2001
+From: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>
+Date: Sat, 7 Nov 2020 21:01:40 +0100
+Subject: [PATCH 052/194] Linux: Remove the autotools build system
+
+Fixes #394.
+---
+ desmume/src/frontend/posix/Makefile.am        | 243 -----------
+ desmume/src/frontend/posix/autogen.sh         |   3 -
+ desmume/src/frontend/posix/cli/Makefile.am    |   8 -
+ .../src/frontend/posix/cli/doc/Makefile.am    |   1 -
+ desmume/src/frontend/posix/configure.ac       | 392 ------------------
+ desmume/src/frontend/posix/desmume.mk         |   7 -
+ .../src/frontend/posix/gtk-glade/Makefile.am  |  37 --
+ .../frontend/posix/gtk-glade/doc/Makefile.am  |   1 -
+ desmume/src/frontend/posix/gtk/Makefile.am    |  49 ---
+ .../src/frontend/posix/gtk/doc/Makefile.am    |   1 -
+ 10 files changed, 742 deletions(-)
+ delete mode 100644 desmume/src/frontend/posix/Makefile.am
+ delete mode 100755 desmume/src/frontend/posix/autogen.sh
+ delete mode 100644 desmume/src/frontend/posix/cli/Makefile.am
+ delete mode 100644 desmume/src/frontend/posix/cli/doc/Makefile.am
+ delete mode 100644 desmume/src/frontend/posix/configure.ac
+ delete mode 100644 desmume/src/frontend/posix/desmume.mk
+ delete mode 100644 desmume/src/frontend/posix/gtk-glade/Makefile.am
+ delete mode 100644 desmume/src/frontend/posix/gtk-glade/doc/Makefile.am
+ delete mode 100644 desmume/src/frontend/posix/gtk/Makefile.am
+ delete mode 100644 desmume/src/frontend/posix/gtk/doc/Makefile.am
+
+diff --git a/desmume/src/frontend/posix/Makefile.am b/desmume/src/frontend/posix/Makefile.am
+deleted file mode 100644
+index 59b0fb3b..00000000
+--- a/desmume/src/frontend/posix/Makefile.am
++++ /dev/null
+@@ -1,243 +0,0 @@
+-include desmume.mk
+-
+-AM_CPPFLAGS += $(SDL_CFLAGS) $(GTHREAD_CFLAGS) $(X_CFLAGS) $(ALSA_CFLAGS) $(LIBAGG_CFLAGS) $(LIBSOUNDTOUCH_CFLAGS)
+-
+-
+-
+-# from old stuff
+-# EXTRA_DIST = README.LIN README.MAC README.WIN dsm.txt dsv.txt autogen.sh $(PO_FILES_IN)
+-# DISTCLEANFILES = $(PO_FILES)
+-# SUBDIRS = $(PO_DIR) src
+-
+-EXTRA_DIST = instruction_tabdef.inc thumb_tabdef.inc cocoa
+-if HAVE_GDB_STUB
+-SUBDIRS = . $(UI_DIR)
+-else
+-SUBDIRS = . $(UI_DIR)
+-endif
+-#DIST_SUBDIRS = . cli gtk gtk-glade
+-SUBDIRS += $(PO_DIR)
+-noinst_LIBRARIES = libdesmume.a
+-libdesmume_a_SOURCES = \
+-	../../armcpu.cpp ../../armcpu.h \
+-	../../arm_instructions.cpp \
+-	../../agg2d.h ../../agg2d.inl \
+-	../../bios.cpp ../../bios.h ../../bits.h ../../cp15.cpp ../../cp15.h \
+-	../../commandline.h ../../commandline.cpp \
+-	../../common.cpp ../../common.h \
+-	../../debug.cpp ../../debug.h \
+-	../../driver.cpp ../../driver.h \
+-	../../Database.cpp ../../Database.h \
+-	../../emufile.h ../../emufile.cpp ../../encrypt.h ../../encrypt.cpp ../../FIFO.cpp ../../FIFO.h \
+-	../../firmware.cpp ../../firmware.h ../../GPU.cpp ../../GPU.h \
+-	../../GPU_osd.h \
+-	../../instructions.h \
+-	../../mem.h ../../mc.cpp ../../mc.h \
+-	../../path.cpp ../../path.h \
+-	../../readwrite.cpp ../../readwrite.h \
+-	../../wifi.cpp ../../wifi.h \
+-	../../mic.h \
+-	../../MMU.cpp ../../MMU.h ../../MMU_timing.h ../../NDSSystem.cpp ../../NDSSystem.h ../../registers.h \
+-	../../OGLRender.h ../../OGLRender_3_2.h \
+-	../../ROMReader.cpp ../../ROMReader.h \
+-	../../render3D.cpp ../../render3D.h \
+-	../../rtc.cpp ../../rtc.h \
+-	../../saves.cpp ../../saves.h \
+-	../../slot1.cpp ../../slot1.h \
+-	../../slot2.cpp ../../slot2.h \
+-	../../SPU.cpp ../../SPU.h \
+-	../../matrix.cpp ../../matrix.h \
+-	../../gfx3d.cpp ../../gfx3d.h \
+-	../../thumb_instructions.cpp ../../types.h \
+-	../../movie.cpp ../../movie.h \
+-	../../PACKED.h ../../PACKED_END.h \
+-	../../frontend/modules/Disassembler.cpp ../../frontend/modules/Disassembler.h \
+-	../../utils/advanscene.cpp ../../utils/advanscene.h \
+-	../../utils/datetime.cpp ../../utils/datetime.h \
+-	../../utils/guid.cpp ../../utils/guid.h \
+-	../../utils/emufat.cpp ../../utils/emufat.h utils/emufat_types.h \
+-	../../utils/fsnitro.cpp ../../utils/fsnitro.h \
+-	../../utils/xstring.cpp ../../utils/xstring.h \
+-	../../utils/decrypt/crc.cpp ../../utils/decrypt/crc.h ../../utils/decrypt/decrypt.cpp \
+-	../../utils/decrypt/decrypt.h ../../utils/decrypt/header.cpp ../../utils/decrypt/header.h \
+-	../../utils/task.cpp ../../utils/task.h \
+-	../../utils/vfat.h ../../utils/vfat.cpp \
+-	../../utils/dlditool.cpp \
+-	../../utils/libfat/bit_ops.h \
+-	../../utils/libfat/cache.cpp \
+-	../../utils/libfat/cache.h \
+-	../../utils/libfat/common.h \
+-	../../utils/libfat/directory.cpp \
+-	../../utils/libfat/directory.h \
+-	../../utils/libfat/disc.cpp \
+-	../../utils/libfat/disc.h \
+-	../../utils/libfat/disc_io.h \
+-	../../utils/libfat/fat.h \
+-	../../utils/libfat/fatdir.cpp \
+-	../../utils/libfat/fatdir.h \
+-	../../utils/libfat/fatfile.cpp \
+-	../../utils/libfat/fatfile.h \
+-	../../utils/libfat/filetime.cpp \
+-	../../utils/libfat/filetime.h \
+-	../../utils/libfat/file_allocation_table.cpp \
+-	../../utils/libfat/file_allocation_table.h \
+-	../../utils/libfat/libfat.cpp \
+-	../../utils/libfat/libfat_pc.h \
+-	../../utils/libfat/libfat_public_api.cpp \
+-	../../utils/libfat/libfat_public_api.h \
+-	../../utils/libfat/lock.cpp \
+-	../../utils/libfat/lock.h \
+-	../../utils/libfat/mem_allocate.h \
+-	../../utils/libfat/partition.cpp \
+-	../../utils/libfat/partition.h \
+-	../../utils/tinyxml/tinystr.cpp \
+-	../../utils/tinyxml/tinystr.h \
+-	../../utils/tinyxml/tinyxml.cpp \
+-	../../utils/tinyxml/tinyxml.h \
+-	../../utils/tinyxml/tinyxmlerror.cpp \
+-	../../utils/tinyxml/tinyxmlparser.cpp \
+-	../../utils/glcorearb.h \
+-	../../utils/colorspacehandler/colorspacehandler.cpp ../../utils/colorspacehandler/colorspacehandler.h \
+-	../../addons/slot2_auto.cpp ../../addons/slot2_mpcf.cpp ../../addons/slot2_paddle.cpp ../../addons/slot2_gbagame.cpp ../../addons/slot2_none.cpp ../../addons/slot2_rumblepak.cpp ../../addons/slot2_guitarGrip.cpp ../../addons/slot2_expMemory.cpp ../../addons/slot2_piano.cpp ../../addons/slot2_passme.cpp ../../addons/slot1_none.cpp ../../addons/slot1_r4.cpp ../../addons/slot1_retail_nand.cpp ../../addons/slot1_retail_auto.cpp ../../addons/slot1_retail_mcrom.cpp ../../addons/slot1_retail_mcrom_debug.cpp ../../addons/slot1comp_mc.cpp ../../addons/slot1comp_mc.h ../../addons/slot1comp_rom.h ../../addons/slot1comp_rom.cpp ../../addons/slot1comp_protocol.h ../../addons/slot1comp_protocol.cpp \
+-	../../cheatSystem.cpp ../../cheatSystem.h \
+-	../../texcache.cpp ../../texcache.h ../../rasterize.cpp ../../rasterize.h \
+-	../../metaspu/metaspu.cpp ../../metaspu/metaspu.h \
+-	../../filter/2xsai.cpp ../../filter/bilinear.cpp ../../filter/deposterize.cpp ../../filter/epx.cpp ../../filter/filter.h \
+-	../../filter/hq2x.cpp ../../filter/hq2x.h \
+-	../../filter/hq3x.cpp ../../filter/hq3x.dat \
+-	../../filter/hq4x.cpp ../../filter/hq4x.dat \
+-	../../filter/interp.h ../../filter/lq2x.cpp ../../filter/lq2x.h ../../filter/scanline.cpp \
+-	../../filter/videofilter.cpp ../../filter/videofilter.h \
+-	../../filter/xbrz.cpp ../../filter/xbrz.h \
+-	../../version.cpp ../../version.h \
+-	../../libretro-common/compat/compat_getopt.c \
+-	../../libretro-common/file/file_path.c \
+-	../../libretro-common/compat/compat_strl.c \
+-	../../libretro-common/features/features_cpu.c \
+-	../../libretro-common/file/retro_dirent.c \
+-	../../libretro-common/file/retro_stat.c \
+-	../../libretro-common/rthreads/async_job.c \
+-	../../libretro-common/rthreads/rsemaphore.c \
+-	../../libretro-common/rthreads/rthreads.c \
+-	../../libretro-common/encodings/encoding_utf.c
+-
+-if SUPPORT_SSE2
+-libdesmume_a_SOURCES += \
+-	../../utils/colorspacehandler/colorspacehandler_SSE2.cpp ../../utils/colorspacehandler/colorspacehandler_SSE2.h
+-endif
+-
+-if SUPPORT_AVX2
+-libdesmume_a_SOURCES += \
+-	../../utils/colorspacehandler/colorspacehandler_AVX2.cpp ../../utils/colorspacehandler/colorspacehandler_AVX2.h
+-endif
+-
+-if SUPPORT_ALTIVEC
+-libdesmume_a_SOURCES += \
+-	../../utils/colorspacehandler/colorspacehandler_AltiVec.cpp ../../utils/colorspacehandler/colorspacehandler_AltiVec.h
+-endif
+-
+-if HAVE_JIT
+-libdesmume_a_SOURCES += \
+-	../../arm_jit.cpp ../../arm_jit.h ../../instruction_attributes.h \
+-	../../utils/AsmJit/AsmJit.h \
+-	../../utils/AsmJit/Config.h \
+-	../../utils/AsmJit/core.h \
+-	../../utils/AsmJit/x86.h \
+-	../../utils/AsmJit/core/apibegin.h \
+-	../../utils/AsmJit/core/apiend.h \
+-	../../utils/AsmJit/core/assembler.cpp \
+-	../../utils/AsmJit/core/assembler.h \
+-	../../utils/AsmJit/core/assert.cpp \
+-	../../utils/AsmJit/core/assert.h \
+-	../../utils/AsmJit/core/buffer.cpp \
+-	../../utils/AsmJit/core/buffer.h \
+-	../../utils/AsmJit/core/build.h \
+-	../../utils/AsmJit/core/compiler.cpp \
+-	../../utils/AsmJit/core/compiler.h \
+-	../../utils/AsmJit/core/compilercontext.cpp \
+-	../../utils/AsmJit/core/compilercontext.h \
+-	../../utils/AsmJit/core/compilerfunc.cpp \
+-	../../utils/AsmJit/core/compilerfunc.h \
+-	../../utils/AsmJit/core/compileritem.cpp \
+-	../../utils/AsmJit/core/compileritem.h \
+-	../../utils/AsmJit/core/context.cpp \
+-	../../utils/AsmJit/core/context.h \
+-	../../utils/AsmJit/core/cpuinfo.cpp \
+-	../../utils/AsmJit/core/cpuinfo.h \
+-	../../utils/AsmJit/core/defs.cpp \
+-	../../utils/AsmJit/core/defs.h \
+-	../../utils/AsmJit/core/func.cpp \
+-	../../utils/AsmJit/core/func.h \
+-	../../utils/AsmJit/core/intutil.h \
+-	../../utils/AsmJit/core/lock.h \
+-	../../utils/AsmJit/core/logger.cpp \
+-	../../utils/AsmJit/core/logger.h \
+-	../../utils/AsmJit/core/memorymanager.cpp \
+-	../../utils/AsmJit/core/memorymanager.h \
+-	../../utils/AsmJit/core/memorymarker.cpp \
+-	../../utils/AsmJit/core/memorymarker.h \
+-	../../utils/AsmJit/core/operand.cpp \
+-	../../utils/AsmJit/core/operand.h \
+-	../../utils/AsmJit/core/podvector.h \
+-	../../utils/AsmJit/core/stringbuilder.cpp \
+-	../../utils/AsmJit/core/stringbuilder.h \
+-	../../utils/AsmJit/core/stringutil.cpp \
+-	../../utils/AsmJit/core/stringutil.h \
+-	../../utils/AsmJit/core/virtualmemory.cpp \
+-	../../utils/AsmJit/core/virtualmemory.h \
+-	../../utils/AsmJit/core/zonememory.cpp \
+-	../../utils/AsmJit/core/zonememory.h \
+-	../../utils/AsmJit/x86/x86assembler.cpp \
+-	../../utils/AsmJit/x86/x86assembler.h \
+-	../../utils/AsmJit/x86/x86compiler.cpp \
+-	../../utils/AsmJit/x86/x86compiler.h \
+-	../../utils/AsmJit/x86/x86compilercontext.cpp \
+-	../../utils/AsmJit/x86/x86compilercontext.h \
+-	../../utils/AsmJit/x86/x86compilerfunc.cpp \
+-	../../utils/AsmJit/x86/x86compilerfunc.h \
+-	../../utils/AsmJit/x86/x86compileritem.cpp \
+-	../../utils/AsmJit/x86/x86compileritem.h \
+-	../../utils/AsmJit/x86/x86cpuinfo.cpp \
+-	../../utils/AsmJit/x86/x86cpuinfo.h \
+-	../../utils/AsmJit/x86/x86defs.cpp \
+-	../../utils/AsmJit/x86/x86defs.h \
+-	../../utils/AsmJit/x86/x86func.cpp \
+-	../../utils/AsmJit/x86/x86func.h \
+-	../../utils/AsmJit/x86/x86operand.cpp \
+-	../../utils/AsmJit/x86/x86operand.h \
+-	../../utils/AsmJit/x86/x86util.cpp \
+-	../../utils/AsmJit/x86/x86util.h
+-endif
+-
+-libdesmume_a_SOURCES += shared/desmume_config.cpp shared/desmume_config.h
+-
+-if HAVE_GL
+-libdesmume_a_SOURCES += ../../OGLRender.cpp ../../OGLRender_3_2.cpp
+-endif
+-
+-if HAVE_OPENAL
+-libdesmume_a_SOURCES += shared/mic_openal.cpp
+-else
+-if HAVE_ALSA
+-libdesmume_a_SOURCES += shared/mic_alsa.cpp
+-else
+-libdesmume_a_SOURCES += ../../mic.cpp
+-endif
+-endif
+-
+-if HAVE_LIBSOUNDTOUCH
+-libdesmume_a_SOURCES += ../../metaspu/SndOut.cpp ../../metaspu/SndOut.h ../../metaspu/Timestretcher.cpp
+-endif
+-
+-if HAVE_LIBAGG
+-libdesmume_a_SOURCES += ../../frontend/modules/osd/agg/aggdraw.cpp ../../frontend/modules/osd/agg/aggdraw.h ../../frontend/modules/osd/agg/agg_osd.cpp
+-endif
+-if HAVE_LUA
+-AM_CPPFLAGS += $(LUA_CFLAGS)
+-libdesmume_a_SOURCES += ../../lua-engine.cpp
+-endif
+-if HAVE_GDB_STUB
+-libdesmume_a_SOURCES += ../../gdbstub/gdbstub.cpp
+-libdesmume_a_SOURCES += ../../gdbstub/gdbstub_internal.h
+-libdesmume_a_SOURCES += ../../gdbstub.h
+-endif
+diff --git a/desmume/src/frontend/posix/autogen.sh b/desmume/src/frontend/posix/autogen.sh
+deleted file mode 100755
+index 93b3d6fc..00000000
+--- a/desmume/src/frontend/posix/autogen.sh
++++ /dev/null
+@@ -1,3 +0,0 @@
+-#!/bin/sh
+-
+-autoreconf --install --force --verbose
+diff --git a/desmume/src/frontend/posix/cli/Makefile.am b/desmume/src/frontend/posix/cli/Makefile.am
+deleted file mode 100644
+index fdfc13ec..00000000
+--- a/desmume/src/frontend/posix/cli/Makefile.am
++++ /dev/null
+@@ -1,8 +0,0 @@
+-SUBDIRS = doc
+-include ../desmume.mk
+-
+-AM_CPPFLAGS += $(SDL_CFLAGS) $(ALSA_CFLAGS) $(LIBAGG_CFLAGS) $(GLIB_CFLAGS) $(GTHREAD_CFLAGS) $(LIBSOUNDTOUCH_CFLAGS)
+-
+-bin_PROGRAMS = desmume-cli
+-desmume_cli_SOURCES = main.cpp ../shared/sndsdl.cpp ../shared/ctrlssdl.h ../shared/ctrlssdl.cpp
+-desmume_cli_LDADD = ../libdesmume.a $(X_LIBS) -lX11 $(SDL_LIBS) $(ALSA_LIBS) $(LIBAGG_LIBS) $(GLIB_LIBS) $(GTHREAD_LIBS) $(LIBSOUNDTOUCH_LIBS)
+diff --git a/desmume/src/frontend/posix/cli/doc/Makefile.am b/desmume/src/frontend/posix/cli/doc/Makefile.am
+deleted file mode 100644
+index af6aed0f..00000000
+--- a/desmume/src/frontend/posix/cli/doc/Makefile.am
++++ /dev/null
+@@ -1 +0,0 @@
+-dist_man_MANS = desmume-cli.1
+diff --git a/desmume/src/frontend/posix/configure.ac b/desmume/src/frontend/posix/configure.ac
+deleted file mode 100644
+index f7ea9c43..00000000
+--- a/desmume/src/frontend/posix/configure.ac
++++ /dev/null
+@@ -1,392 +0,0 @@
+-dnl --- Package name is first argument to AC_INIT
+-dnl --- Release version is second argument to AC_INIT
+-
+-AC_INIT(desmume, [svn])
+-
+-dnl -- find host architecture for some os specific libraries
+-AC_CANONICAL_HOST
+-case $host in
+-  *linux*) desmume_arch=linux;;
+-  *mingw*) desmume_arch=windows;;
+-  *darwin*) desmume_arch=linux;;
+-  *bsd*) desmume_arch=linux;;
+-esac
+-AC_SUBST(desmume_arch)
+-
+-AC_CONFIG_AUX_DIR([.])
+-
+-AM_INIT_AUTOMAKE([1.10 subdir-objects tar-pax foreign])
+-
+-dnl -- make sure we have a c++ compiler
+-AC_PROG_CXX
+-
+-dnl -- use ranlib for libraries
+-AC_PROG_RANLIB
+-
+-dnl -- check for endianess
+-AC_C_BIGENDIAN
+-
+-dnl -- since svn 1.7 theres only a single .svn folder in the root dir of the checkout
+-dnl -- depending on what was checked out that might be .svn or ../.svn
+-REVISION=0
+-SVN=`which svn 2>/dev/null`
+-if ( test -d .svn || test -d ../.svn ; ) && test "x${SVN}" != "x" -a -x "${SVN}" ; then
+-  REVISION=`$SVN info|grep 'Last Changed Rev'|cut -d' ' -f4`
+-  echo "$REVISION"
+-fi
+-AC_DEFINE_UNQUOTED([SVN_REV], [$REVISION], [subversion revision number])
+-AC_DEFINE_UNQUOTED([SVN_REV_STR], ["$REVISION"], [subversion revision number string])
+-
+-dnl - Check for zlib
+-AC_CHECK_LIB(z, gzopen, [], [AC_MSG_ERROR([zlib was not found, we can't go further. Please install it or specify the location where it's installed.])])
+-
+-dnl - Check for libpcap
+-AC_CHECK_LIB(pcap, main, [LIBS="$LIBS -lpcap"], [AC_MSG_ERROR([libpcap was not found, we can't go further. Please install it or specify the location where it's installed.])])
+-
+-dnl - Check for zziplib
+-AC_CHECK_LIB(zzip, zzip_open, [
+-	LIBS="-lzzip $LIBS"
+-	AC_DEFINE([HAVE_LIBZZIP])
+-	AC_MSG_CHECKING([[whether zzip use void * as second parameter]])
+-	AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <zzip/lib.h>]], [[
+-		void * v;
+-		zzip_read(NULL, v, 0);]])],
+-		AC_MSG_RESULT(yes),
+-		AC_DEFINE([ZZIP_OLD_READ])
+-		AC_MSG_RESULT(no))
+-])
+-
+-dnl - Check for X11
+-AC_PATH_X
+-
+-dnl - Check for SDL
+-AC_PATH_PROGS(SDLCONFIG, [sdl-config sdl11-config])
+-if test ! "x$SDLCONFIG" = "x" ; then
+-  SDL_CFLAGS=`$SDLCONFIG --cflags`
+-  SDL_LIBS=`$SDLCONFIG --libs`
+-  AC_SUBST(SDL_CFLAGS)
+-  AC_SUBST(SDL_LIBS)
+-else
+-  AC_MSG_ERROR([sdl is required to build desmume])
+-fi
+-
+-dnl - Check for the OpenGL includes
+-AC_CHECK_HEADERS([GL/gl.h],
+-		 [AC_CHECK_HEADERS([GL/glu.h], [have_gl_h=yes LIBS="$LIBS -lGL -lGLU"], [have_gl_h=no])],
+-		 [have_gl_h=no])
+-if test "have_gl_h" = "no" ; then
+-	AC_MSG_WARN([Building without GL support because of missing headers.])
+-fi
+-AM_CONDITIONAL([HAVE_GL], [test "${have_gl_h}" = "yes"])
+-
+-dnl - if --enable-osmesa is used, check for it
+-AC_ARG_ENABLE([osmesa],
+-               [AC_HELP_STRING([--enable-osmesa], [use off-screen mesa, overrides GLX])],
+-               [osmesa=$enableval],
+-               [osmesa=no])
+-
+-dnl - GLX is the default renderer
+-AC_ARG_ENABLE([glx],
+-               [AC_HELP_STRING([--enable-glx], [use hw accelerated rendering])],
+-               [glx=$enableval],
+-               [glx=yes])
+-
+-if test "x$osmesa" = "xyes" ; then
+-	AC_CHECK_LIB(dl, main)
+-	AC_CHECK_LIB([GL], main)
+-	AC_CHECK_LIB(OSMesa, main,[
+-		useosmesa=yes
+-		AC_DEFINE(HAVE_LIBOSMESA)
+-		OSMESA_LIBS="-lOSMesa"
+-		AC_SUBST(OSMESA_LIBS)
+-	])
+-else
+-  if test "x$glx" = "xyes" ; then
+-	AC_CHECK_LIB(dl, main)
+-	AC_CHECK_LIB([GL], main)
+-	AC_CHECK_HEADERS([GL/glx.h], [
+-	  useglx=yes
+-	  AC_DEFINE(HAVE_GL_GLX)
+-	  GLX_LIBS="-lX11"
+-	  AC_SUBST(GLX_LIBS)
+-	])
+-  fi
+-fi
+-AM_CONDITIONAL([HAVE_LIBOSMESA],  [test "${useosmesa}" = "yes"])
+-AM_CONDITIONAL([HAVE_GL_GLX],	  [test "${useglx}" = "yes"])
+-
+-dnl - make the usage of libagg for HUD rendering configurable
+-AC_ARG_ENABLE([hud],
+-              [AC_HELP_STRING([--enable-hud], [Enable HUD rendering, requires libagg])],
+-              [libagg=yes])
+-
+-HAVE_OPENAL=no
+-dnl - openal support
+-AC_ARG_ENABLE(openal,
+-	      [AC_HELP_STRING(--enable-openal, enable experimental OpenAL microphone input)],
+-	      [openal=yes])
+-
+-if test "x$openal" = "xyes" ; then
+-	AC_CHECK_LIB([openal], [main],[
+-                HAVE_OPENAL=yes
+-		LIBS="$LIBS -lopenal"
+-	])
+-fi
+-AM_CONDITIONAL([HAVE_OPENAL], [test "${HAVE_OPENAL}" = "yes"])
+-
+-dnl - Check for GTK and/or libglade
+-FOUND_GLIB=no
+-HAVE_ALSA=no
+-GLIB_VER=2.8
+-GTK_VER=3.24
+-
+-PKG_CHECK_MODULES(GLIB,
+-                  glib-2.0 >= $GLIB_VER,
+-                  FOUND_GLIB=yes,
+-                  FOUND_GLIB=no)
+-
+-PKG_CHECK_MODULES(GTK,
+-                  gtk+-3.0 >= $GTK_VER,
+-                  HAVE_GTK=yes,
+-                  HAVE_GTK=no)
+-AC_SUBST(GTK_CFLAGS)
+-AC_SUBST(GTK_LIBS)
+-
+-
+-PKG_CHECK_MODULES(GTHREAD,
+-                  "gthread-2.0",
+-                  HAVE_GTHREAD=yes,
+-                  HAVE_GTHREAD=no)
+-AC_SUBST(GTHREAD_CFLAGS)
+-AC_SUBST(GTHREAD_LIBS)
+-
+-AC_ARG_ENABLE([glade],
+-               [AC_HELP_STRING([--enable-glade], [enable glade frontend])],
+-               [glade=$enableval],
+-               [glade=no])
+-
+-if test "x$glade" = "xyes" ; then
+-    PKG_CHECK_MODULES(LIBGLADE,
+-                      "libglade-2.0",
+-                      HAVE_LIBGLADE=yes,
+-                      HAVE_LIBGLADE=no)
+-    AC_SUBST(LIBGLADE_CFLAGS)
+-    AC_SUBST(LIBGLADE_LIBS)
+-
+-    dnl uninstalled glade ui dir
+-    AC_DEFINE_UNQUOTED(GLADEUI_UNINSTALLED_DIR,"`pwd`/gtk-glade/glade/",[path to glade ui dir])
+-    AC_SUBST(GLADEUI_UNINSTALLED_DIR)
+-
+-    PKG_CHECK_MODULES(GTKGLEXT,
+-                      "gtkglext-1.0",
+-                      AC_DEFINE([GTKGLEXT_AVAILABLE], [1])
+-                      [])
+-    AC_SUBST(GTKGLEXT_CFLAGS)
+-    AC_SUBST(GTKGLEXT_LIBS)
+-fi
+-
+-AC_PATH_PROG(UPDATEDESKTOP, [update-desktop-database])
+-
+-# Need check for both lua and lua5.1 to run on debian, see mysql bug #29945
+-PKG_CHECK_MODULES(LUA,
+-                  lua >= 5.1,
+-                  HAVE_LUA=yes,
+-                  HAVE_LUA=no)
+-PKG_CHECK_MODULES(LUA,
+-                  lua5.1 >= 5.1,
+-                  HAVE_LUA=yes,
+-                  HAVE_LUA=no)
+-AC_SUBST(LUA_CFLAGS)
+-AC_SUBST(LUA_LIBS)
+-dnl -- force lua disabled
+-AM_CONDITIONAL([HAVE_LUA], [test "${HAVE_LUA}x" = "yes"])
+-
+-if test ! "x$HAVE_OPENAL" = "xyes" ; then
+-  PKG_CHECK_MODULES(ALSA, alsa >= 1.0, HAVE_ALSA=yes, HAVE_ALSA=no)
+-  AC_SUBST(ALSA_CFLAGS)
+-  AC_SUBST(ALSA_LIBS)
+-fi
+-AM_CONDITIONAL([HAVE_ALSA], [test "${HAVE_ALSA}" = "yes"])
+-
+-PKG_CHECK_MODULES(LIBAGG, libagg >= 2.4.0, FOUND_LIBAGG=yes, FOUND_LIBAGG=no)
+-AM_CONDITIONAL([HAVE_LIBAGG], [test "x$libagg" = "xyes" -a "${FOUND_LIBAGG}" = "yes"])
+-if test "x$libagg" = "xyes" ; then
+-   if test "x$FOUND_LIBAGG" = "xyes" ; then
+-       AC_SUBST(LIBAGG_CFLAGS)
+-       AC_SUBST(LIBAGG_LIBS)
+-       AC_DEFINE([HAVE_LIBAGG])
+-   else
+-       AC_MSG_ERROR([HUD rendering enabled, but libagg not found])
+-   fi
+-fi
+-
+-PKG_CHECK_MODULES(LIBSOUNDTOUCH, soundtouch >= 1.5.0, HAVE_LIBSOUNDTOUCH=yes, HAVE_LIBSOUNDTOUCH=no)
+-AC_SUBST(LIBSOUNDTOUCH_CFLAGS)
+-AC_SUBST(LIBSOUNDTOUCH_LIBS)
+-AM_CONDITIONAL([HAVE_LIBSOUNDTOUCH], [test "${HAVE_LIBSOUNDTOUCH}" = "yes"])
+-if test "x$HAVE_LIBSOUNDTOUCH" = "xyes"; then
+-   AC_DEFINE([HAVE_LIBSOUNDTOUCH])
+-else
+-   AC_MSG_WARN([SoundTouch library not found, pcsx2 resampler will be disabled])
+-fi
+-
+-if test "x$HAVE_ALSA" = "xno"; then
+-   if test "x$HAVE_OPENAL" = "xno"; then
+-      AC_DEFINE([FAKE_MIC])
+-   fi
+-fi
+-
+-dnl - Determine which UIs to build
+-UI_DIR="cli $UI_DIR"
+-if test "x$HAVE_GTK" = "xyes"; then
+-  UI_DIR="gtk $UI_DIR"
+-fi
+-
+-if test "x$HAVE_LIBGLADE" = "xyes"; then
+-    UI_DIR="gtk-glade $UI_DIR"
+-
+-    dnl -- localization for gtk-glade UI
+-    GETTEXT_PACKAGE=desmume
+-    AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE, "$GETTEXT_PACKAGE", [Define to the gettext package name])
+-    AC_SUBST(GETTEXT_PACKAGE)
+-    ALL_LINGUAS="fr nb pt_BR sv zh_CN zh_TW"
+-    AM_GLIB_GNU_GETTEXT
+-fi
+-
+-dnl - jit support
+-case $host_cpu in
+-  x86|x86_64|i386|i486|i586|i686)
+-    HAVE_JIT=yes
+-    AC_DEFINE(HAVE_JIT)
+-    ;;
+-esac
+-AM_CONDITIONAL([HAVE_JIT], [test "x$HAVE_JIT" = "xyes"])
+-
+-dnl - wifi support
+-AC_ARG_ENABLE(wifi,
+-              [AC_HELP_STRING(--enable-wifi, enable wifi support)],
+-              [wifisupport=yes])
+-
+-if test "x$wifisupport" = "xyes" ; then
+-    AC_DEFINE(EXPERIMENTAL_WIFI_COMM)
+-fi
+-
+-dnl Set compiler library flags per host architecture
+-case $host in
+-  *mingw*)
+-    LIBS="$LIBS -ldxguid -ldxerr8 -ldsound -lopengl32 -lws2_32 -mwindows"
+-    UI_DIR="windows"
+-    ;;
+-  *darwin*)
+-    dnl - openal is required on mac os x and we are not able to figure out if it's installed or not
+-    AC_DEFINE(HAVE_OPENAL)
+-    LIBS="$LIBS -framework OpenGL -framework OpenAL"
+-    CPPFLAGS="$CPPFLAGS -I/System/Library/Frameworks/OpenAL.framework/Headers"
+-	AC_SUBST(CPPFLAGS)
+-    dnl - extra hackery needed for X includes
+-    AC_PATH_XTRA
+-    ;;
+-esac
+-
+-# Detect the host platform and architecture and feed them to the compiler as
+-# defines
+-AS_CASE([$host],
+-		[*linux*], [AC_DEFINE(HOST_LINUX)],
+-		[*bsd*]  , [AC_DEFINE(HOST_BSD)],
+-		[*mingw*], [AC_DEFINE(HOST_WINDOWS)],
+-		[*darwin*],[AC_DEFINE(HOST_DARWIN)],
+-		[AC_DEFINE(HOST_UNK)]
+-)
+-
+-AS_CASE([$host_cpu],
+-		[x86_64], [AC_DEFINE(HOST_64)],
+-		[amd64],  [AC_DEFINE(HOST_64)],
+-		[AC_DEFINE(HOST_32)]
+-)
+-
+-AC_CHECK_DECL([__SSE2__])
+-AM_CONDITIONAL([SUPPORT_SSE2], [test "x$ac_cv_have_decl___SSE2__" = xyes])
+-
+-AC_CHECK_DECL([__AVX2__])
+-AM_CONDITIONAL([SUPPORT_AVX2], [test "x$ac_cv_have_decl___AVX2__" = xyes])
+-
+-AC_CHECK_DECL([__ALTIVEC__])
+-AM_CONDITIONAL([SUPPORT_ALTIVEC], [test "x$ac_cv_have_decl___ALTIVEC__" = xyes])
+-
+-AC_SUBST(UI_DIR)
+-AC_SUBST(PO_DIR)
+-
+-dnl - Gdb stub
+-AC_ARG_ENABLE(gdb-stub,
+-              [AC_HELP_STRING(--enable-gdb-stub, enable gdb stub)],
+-              [
+-			AC_DEFINE(GDB_STUB)
+-			wantgdbstub=yes
+-		])
+-AM_CONDITIONAL([HAVE_GDB_STUB], [test "${wantgdbstub}" = "yes"])
+-
+-dnl - Compiler warnings
+-
+-# for developer use, enable lots of compile warnings,
+-# but don't require this generally, because some system's
+-# header files (BSD) can't handle it
+-#
+-# NB: must add -Werror after AC_PROG_CC, etc., so do this last
+-AC_ARG_ENABLE(hardcore,
+-              [AC_HELP_STRING(--enable-hardcore, turn on -W -Wall -Werror)],
+-              [case "${enableval}" in
+-                yes) ENABLE_HARDCORE=1 ;;
+-                no) ENABLE_HARDCORE=0 ;;
+-                *) AC_MSG_ERROR(bad value ${enableval} for --enable-hardcore) ;;              esac],
+-              [ENABLE_HARDCORE=0])
+-
+-if test "x[$]ENABLE_HARDCORE" = "x1"; then
+-  AC_MSG_WARN(enable hardcore compile warnings)
+-  if test "x$CXX" = "x"; then
+-    dnl - only valid for C with newer gcc's
+-    CPPFLAGS="[$]CPPFLAGS -Wmissing-prototypes"
+-  fi
+-   dnl - -Wshadow
+-   CPPFLAGS="[$]CPPFLAGS -Wall -Wextra -D_FORTIFY_SOURCE=2 -Wno-missing-field-initializers -Wpointer-arith -Wcast-align -Wwrite-strings -Wno-unused-parameter -Wmissing-declarations -Wundef -Wmissing-noreturn -Wredundant-decls -Wformat-nonliteral -Wformat-security -Winit-self -Wno-reorder"
+-fi
+-
+-dnl - Enable debug mode
+-AC_ARG_ENABLE(debug,
+-              AC_HELP_STRING(--enable-debug, enable debug information),
+-              AC_DEFINE(DEBUG))
+-AC_ARG_ENABLE(gpu-debug,
+-              AC_HELP_STRING(--enable-gpu-debug, enable gpu debug information),
+-              AC_DEFINE(GPUDEBUG))
+-AC_ARG_ENABLE(div-debug,
+-              AC_HELP_STRING(--enable-div-debug, enable div debug information),
+-              AC_DEFINE(DIVDEBUG))
+-AC_ARG_ENABLE(sqrt-debug,
+-              AC_HELP_STRING(--enable-sqrt-debug, enable sqrt debug information),
+-              AC_DEFINE(SQRTDEBUG))
+-AC_ARG_ENABLE(dma-debug,
+-              AC_HELP_STRING(--enable-dma-debug, enable dma debug information),
+-              AC_DEFINE(DMADEBUG))
+-
+-dnl - Enable memory profiling (disabled)
+-dnl - AC_ARG_ENABLE(memory-profiling,
+-dnl -              AC_HELP_STRING(--enable-memory-profiling, enable memory profiling information),
+-dnl -              AC_DEFINE(PROFILE_MEMORY_ACCESS))
+-
+-dnl -- set maintainer mode
+-AM_MAINTAINER_MODE
+-AC_SUBST(USE_MAINTAINER_MODE)
+-
+-dnl -- TODO: readd gdbstub. just do it as sources, no autotools cruft
+-
+-dnl --- Finally, output all the makefiles
+-AC_CONFIG_FILES([Makefile
+-                 cli/Makefile
+-                 cli/doc/Makefile
+-                 gtk/Makefile
+-                 gtk/doc/Makefile
+-                 gtk-glade/Makefile
+-                 gtk-glade/doc/Makefile
+-])
+-AC_OUTPUT
+-
+-
+diff --git a/desmume/src/frontend/posix/desmume.mk b/desmume/src/frontend/posix/desmume.mk
+deleted file mode 100644
+index 606588b8..00000000
+--- a/desmume/src/frontend/posix/desmume.mk
++++ /dev/null
+@@ -1,7 +0,0 @@
+-AM_CFLAGS = 
+-AM_CPPFLAGS = -I$(top_srcdir)/../../../src/ -I$(top_srcdir)/../../../src/libretro-common/include
+-
+-#add this so that frontends can use "../types.h" for instance (they were built expecting to be in subdirectories of the main desmume dir
+-AM_CPPFLAGS += -I$(top_srcdir)/../../../src/frontend
+-
+-AM_LDFLAGS =
+diff --git a/desmume/src/frontend/posix/gtk-glade/Makefile.am b/desmume/src/frontend/posix/gtk-glade/Makefile.am
+deleted file mode 100644
+index c0ea195d..00000000
+--- a/desmume/src/frontend/posix/gtk-glade/Makefile.am
++++ /dev/null
+@@ -1,37 +0,0 @@
+-SUBDIRS = doc
+-include ../desmume.mk
+-
+-AM_CPPFLAGS += $(SDL_CFLAGS) $(GTKGLEXT_CFLAGS) $(LIBGLADE_CFLAGS) \
+-		$(GTHREAD_CFLAGS) $(ALSA_CFLAGS) $(LIBAGG_CFLAGS) \
+-		$(LIBSOUNDTOUCH_CFLAGS) \
+-		-DDATADIR=\"$(gladedir)/\" -DLOCALEDIR=\"$(localedir)\"
+-AM_LDFLAGS += -rdynamic $(INTLLIBS)
+-
+-EXTRA_DIST = $(glade_DATA) desmume-glade.desktop
+-
+-Applicationsdir = $(datadir)/applications
+-Applications_DATA = desmume-glade.desktop
+-pixmapdir = $(datadir)/pixmaps
+-pixmap_DATA = glade/DeSmuME.xpm
+-gladedir = $(datadir)/desmume/glade
+-glade_DATA = glade/DeSmuMe_Dtools.glade glade/DeSmuMe.glade glade/DeSmuME.xpm
+-
+-bin_PROGRAMS = desmume-glade
+-desmume_glade_SOURCES =  \
+-	globals.h glade-xml.cpp \
+-	callbacks.cpp callbacks.h callbacks_IO.cpp callbacks_IO.h \
+-	desmume.cpp desmume.h \
+-	keyval_names.cpp keyval_names.h main.cpp gdk_gl.cpp gdk_gl.h \
+-	dTools/callbacks_1_ioregs.cpp dTools/callbacks_2_memview.cpp \
+-	dTools/callbacks_3_palview.cpp  dTools/callbacks_4_tileview.cpp \
+-	dTools/callbacks_dtools.h \
+-	dTools/dTools_display.h \
+-	gdk_3Demu.cpp gdk_3Demu.h \
+-	../shared/sndsdl.h ../shared/sndsdl.cpp ../shared/ctrlssdl.h ../shared/ctrlssdl.cpp \
+-	../../../driver.h ../../../driver.cpp
+-
+-desmume_glade_LDADD = ../libdesmume.a \
+-			$(X_LIBS) -lX11 \
+-			$(SDL_LIBS) $(GTKGLEXT_LIBS) $(LIBGLADE_LIBS) \
+-			$(GTHREAD_LIBS) $(ALSA_LIBS) $(LIBAGG_LIBS) \
+-			$(LIBSOUNDTOUCH_LIBS)
+diff --git a/desmume/src/frontend/posix/gtk-glade/doc/Makefile.am b/desmume/src/frontend/posix/gtk-glade/doc/Makefile.am
+deleted file mode 100644
+index c65f9229..00000000
+--- a/desmume/src/frontend/posix/gtk-glade/doc/Makefile.am
++++ /dev/null
+@@ -1 +0,0 @@
+-dist_man_MANS = desmume-glade.1
+diff --git a/desmume/src/frontend/posix/gtk/Makefile.am b/desmume/src/frontend/posix/gtk/Makefile.am
+deleted file mode 100644
+index 75ecb9be..00000000
+--- a/desmume/src/frontend/posix/gtk/Makefile.am
++++ /dev/null
+@@ -1,49 +0,0 @@
+-SUBDIRS = doc
+-include ../desmume.mk
+-
+-AM_CPPFLAGS += $(SDL_CFLAGS) $(GTK_CFLAGS) $(GTHREAD_CFLAGS) $(ALSA_CFLAGS) $(LIBAGG_CFLAGS) $(LIBSOUNDTOUCH_CFLAGS)
+-
+-Applicationsdir = $(datadir)/applications
+-Applications_DATA = desmume.desktop
+-pixmapdir = $(datadir)/pixmaps
+-pixmap_DATA = DeSmuME.svg
+-EXTRA_DIST = DeSmuME.svg desmume.desktop
+-bin_PROGRAMS = desmume
+-desmume_SOURCES = \
+-	avout.h \
+-	avout_pipe_base.cpp avout_pipe_base.h \
+-	avout_x264.cpp avout_x264.h \
+-	avout_flac.cpp avout_flac.h \
+-	config.cpp config.h config_opts.h \
+-	desmume.h desmume.cpp \
+-	dTool.h dToolsList.cpp \
+-	tools/ioregsView.cpp tools/ioregsView.h \
+-	../shared/sndsdl.cpp \
+-	../shared/ctrlssdl.h ../shared/ctrlssdl.cpp \
+-	osmesa_3Demu.cpp osmesa_3Demu.h \
+-	glx_3Demu.cpp glx_3Demu.h \
+-	cheatsGTK.h cheatsGTK.cpp \
+-	main.cpp main.h
+-desmume_LDADD = ../libdesmume.a \
+-	$(X_LIBS) -lX11 $(SDL_LIBS) $(GTK_LIBS) $(GTHREAD_LIBS) $(ALSA_LIBS) $(LIBAGG_LIBS) $(LIBSOUNDTOUCH_LIBS)
+-if HAVE_LIBOSMESA
+-desmume_LDADD += $(OSMESA_LIBS)
+-else
+-if HAVE_GL_GLX
+-desmume_LDADD += $(GLX_LIBS)
+-endif
+-endif
+-
+-UPDATE_DESKTOP = \
+-  appsdir=$(DESTDIR)$(datadir)/applications ; \
+-  if [ -f $$appsdir/mimeinfo.cache ] ; then \
+-    if test ! "x$(UPDATEDESKTOP)" = "x" ; then \
+-      $(UPDATEDESKTOP) $$appsdir ; \
+-    fi \
+-  fi
+-
+-install-data-hook:
+-	$(UPDATE_DESKTOP)
+-
+-uninstall-hook:
+-	$(UPDATE_DESKTOP) 
+diff --git a/desmume/src/frontend/posix/gtk/doc/Makefile.am b/desmume/src/frontend/posix/gtk/doc/Makefile.am
+deleted file mode 100644
+index 41aee329..00000000
+--- a/desmume/src/frontend/posix/gtk/doc/Makefile.am
++++ /dev/null
+@@ -1 +0,0 @@
+-dist_man_MANS = desmume.1
+-- 
+2.31.1
+

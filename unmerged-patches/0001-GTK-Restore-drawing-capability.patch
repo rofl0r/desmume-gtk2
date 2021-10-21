@@ -1,0 +1,26 @@
+From 81f0ded5b601b2986fa8a84f0a3bb42ad7d49a9c Mon Sep 17 00:00:00 2001
+From: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>
+Date: Sat, 29 Aug 2020 12:33:49 +0200
+Subject: [PATCH 001/194] GTK: Restore drawing capability
+
+The expose_event signal has been renamed draw.
+---
+ desmume/src/frontend/posix/gtk/main.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/desmume/src/frontend/posix/gtk/main.cpp b/desmume/src/frontend/posix/gtk/main.cpp
+index 1ffd6139..bb492075 100644
+--- a/desmume/src/frontend/posix/gtk/main.cpp
++++ b/desmume/src/frontend/posix/gtk/main.cpp
+@@ -3439,7 +3439,7 @@ common_gtk_main( class configured_features *my_config)
+                      G_CALLBACK(Stylus_Release), NULL);
+     g_signal_connect(G_OBJECT(pDrawingArea), "motion_notify_event",
+                      G_CALLBACK(Stylus_Move), NULL);
+-    g_signal_connect(G_OBJECT(pDrawingArea), "expose_event",
++    g_signal_connect(G_OBJECT(pDrawingArea), "draw",
+                      G_CALLBACK(ExposeDrawingArea), NULL ) ;
+     g_signal_connect(G_OBJECT(pDrawingArea), "configure_event",
+                      G_CALLBACK(ConfigureDrawingArea), NULL ) ;
+-- 
+2.31.1
+

@@ -1,0 +1,107 @@
+From 91f6e4a9ef7368237bc650ceaeead437e29cd93e Mon Sep 17 00:00:00 2001
+From: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>
+Date: Fri, 20 Nov 2020 22:01:36 +0100
+Subject: [PATCH 064/194] Revert "Posix: Remove X11 dependencies"
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+This reverts commit 48d0717f82bbf9126f486049f3b21e4d52daaafa.
+
+It was causing crashes when running on Xorg…
+
+Fixes #398.
+---
+ desmume/src/frontend/posix/cli/main.cpp    | 7 +++++++
+ desmume/src/frontend/posix/cli/meson.build | 6 +++++-
+ desmume/src/frontend/posix/gtk/main.cpp    | 7 +++++++
+ desmume/src/frontend/posix/gtk/meson.build | 3 ++-
+ 4 files changed, 21 insertions(+), 2 deletions(-)
+
+diff --git a/desmume/src/frontend/posix/cli/main.cpp b/desmume/src/frontend/posix/cli/main.cpp
+index acfc5a3e..194245fe 100644
+--- a/desmume/src/frontend/posix/cli/main.cpp
++++ b/desmume/src/frontend/posix/cli/main.cpp
+@@ -18,6 +18,7 @@
+  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+  * Boston, MA 02111-1307, USA.
+  */
++#include <X11/Xlib.h>
+ #include <SDL.h>
+ #include <SDL_thread.h>
+ #include <stdlib.h>
+@@ -627,6 +628,12 @@ int main(int argc, char ** argv) {
+ 
+   execute = true;
+ 
++  /* X11 multi-threading support */
++  if(!XInitThreads())
++    {
++      fprintf(stderr, "Warning: X11 not thread-safe\n");
++    }
++
+   if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) == -1)
+     {
+       fprintf(stderr, "Error trying to initialize SDL: %s\n",
+diff --git a/desmume/src/frontend/posix/cli/meson.build b/desmume/src/frontend/posix/cli/meson.build
+index f33813d3..d3eb234f 100644
+--- a/desmume/src/frontend/posix/cli/meson.build
++++ b/desmume/src/frontend/posix/cli/meson.build
+@@ -1,3 +1,7 @@
++dep_x11 = dependency('x11')
++
++cli_dependencies = dependencies + [dep_x11]
++
+ cli_src = [
+   'main.cpp',
+   '../shared/sndsdl.cpp',
+@@ -13,7 +17,7 @@ includes = include_directories(
+ 
+ executable('desmume-cli',
+   cli_src,
+-  dependencies: dependencies,
++  dependencies: cli_dependencies,
+   include_directories: includes,
+   link_with: libdesmume,
+   install: true,
+diff --git a/desmume/src/frontend/posix/gtk/main.cpp b/desmume/src/frontend/posix/gtk/main.cpp
+index 3e31274d..2ad7c43f 100644
+--- a/desmume/src/frontend/posix/gtk/main.cpp
++++ b/desmume/src/frontend/posix/gtk/main.cpp
+@@ -29,6 +29,7 @@
+ #include <gio/gapplication.h>
+ #include <gdk/gdkkeysyms.h>
+ #include <SDL.h>
++#include <X11/Xlib.h>
+ #include <vector>
+ 
+ #include "types.h"
+@@ -4590,6 +4591,12 @@ int main (int argc, char *argv[])
+   my_config.parse(argc, argv);
+   init_configured_features( &my_config);
+ 
++  /* X11 multi-threading support */
++  if(!XInitThreads())
++    {
++      fprintf(stderr, "Warning: X11 not thread-safe\n");
++    }
++
+   // TODO: pass G_APPLICATION_HANDLES_COMMAND_LINE instead.
+   GtkApplication *app = gtk_application_new("org.desmume.DeSmuME", G_APPLICATION_HANDLES_OPEN);
+   g_signal_connect (app, "activate", G_CALLBACK(common_gtk_main), &my_config);
+diff --git a/desmume/src/frontend/posix/gtk/meson.build b/desmume/src/frontend/posix/gtk/meson.build
+index caceaae3..20a31da1 100644
+--- a/desmume/src/frontend/posix/gtk/meson.build
++++ b/desmume/src/frontend/posix/gtk/meson.build
+@@ -1,6 +1,7 @@
+ dep_gtk3 = dependency('gtk+-3.0', version: '>=3.24')
++dep_x11 = dependency('x11')
+ 
+-gtk_dependencies = dependencies + [dep_gtk3]
++gtk_dependencies = dependencies + [dep_gtk3, dep_x11]
+ 
+ desmume_src = [
+   'avout_pipe_base.cpp',
+-- 
+2.31.1
+

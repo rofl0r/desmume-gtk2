@@ -1,0 +1,155 @@
+From b568fbc5dc4ab1caa1485332a668a8217442618a Mon Sep 17 00:00:00 2001
+From: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>
+Date: Sat, 19 Dec 2020 01:08:24 +0100
+Subject: [PATCH 075/194] GTK: Move .ui string into a GResource
+
+This makes it easier to edit those files in Glade or such, while keeping
+it inside the final binary.
+
+As a bonus, XML data is getting minified at the packing step.
+---
+ .../frontend/posix/gtk/desmume.gresource.xml  |  7 ++++
+ desmume/src/frontend/posix/gtk/main.cpp       | 38 +------------------
+ desmume/src/frontend/posix/gtk/meson.build    |  7 ++++
+ desmume/src/frontend/posix/gtk/toolbar.ui     | 34 +++++++++++++++++
+ 4 files changed, 49 insertions(+), 37 deletions(-)
+ create mode 100644 desmume/src/frontend/posix/gtk/desmume.gresource.xml
+ create mode 100644 desmume/src/frontend/posix/gtk/toolbar.ui
+
+diff --git a/desmume/src/frontend/posix/gtk/desmume.gresource.xml b/desmume/src/frontend/posix/gtk/desmume.gresource.xml
+new file mode 100644
+index 00000000..849cbc5d
+--- /dev/null
++++ b/desmume/src/frontend/posix/gtk/desmume.gresource.xml
+@@ -0,0 +1,7 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<gresources>
++  <gresource prefix="/org/desmume/DeSmuME">
++    <file preprocess="xml-stripblanks" compressed="true">org.desmume.DeSmuME.svg</file>
++    <file preprocess="xml-stripblanks" compressed="true">toolbar.ui</file>
++  </gresource>
++</gresources>
+diff --git a/desmume/src/frontend/posix/gtk/main.cpp b/desmume/src/frontend/posix/gtk/main.cpp
+index 2ad7c43f..777bc3d9 100644
+--- a/desmume/src/frontend/posix/gtk/main.cpp
++++ b/desmume/src/frontend/posix/gtk/main.cpp
+@@ -1124,42 +1124,6 @@ static const GActionEntry app_entries[] = {
+     { "about",         About },
+ };
+ 
+-static const char *toolbar =
+-"<?xml version='1.0' encoding='UTF-8'?>"
+-"<interface>"
+-"  <requires lib='gtk+' version='3.24'/>"
+-"  <object class='GtkBox' id='toolbar'>"
+-"    <child>"
+-"      <object class='GtkToolButton'>"
+-"        <property name='label' translatable='yes'>_Open</property>"
+-"        <property name='icon-name'>document-open</property>"
+-"        <property name='action-name'>app.open</property>"
+-"      </object>"
+-"    </child>"
+-"    <child>"
+-"      <object class='GtkToolButton'>"
+-"        <property name='label' translatable='yes'>_Run</property>"
+-"        <property name='icon-name'>media-playback-start</property>"
+-"        <property name='action-name'>app.run</property>"
+-"      </object>"
+-"    </child>"
+-"    <child>"
+-"      <object class='GtkToolButton'>"
+-"        <property name='label' translatable='yes'>_Pause</property>"
+-"        <property name='icon-name'>media-playback-pause</property>"
+-"        <property name='action-name'>app.pause</property>"
+-"      </object>"
+-"    </child>"
+-"    <child>"
+-"      <object class='GtkToolButton'>"
+-"        <property name='label' translatable='yes'>_Quit</property>"
+-"        <property name='icon-name'>application-exit</property>"
+-"        <property name='action-name'>app.quit</property>"
+-"      </object>"
+-"    </child>"
+-"  </object>"
+-"</interface>";
+-
+ static const char *graphics_settings =
+ "<?xml version='1.0' encoding='UTF-8'?>"
+ "<interface>"
+@@ -4052,7 +4016,7 @@ common_gtk_main(GApplication *app, gpointer user_data)
+     gtk_container_add(GTK_CONTAINER(pWindow), pBox);
+ 
+     /* Create the toolbar */
+-    GtkBuilder *builder = gtk_builder_new_from_string(toolbar, -1);
++    GtkBuilder *builder = gtk_builder_new_from_resource("/org/desmume/DeSmuME/toolbar.ui");
+     pToolBar = GTK_WIDGET(gtk_builder_get_object(builder, "toolbar"));
+     gtk_container_add(GTK_CONTAINER(pBox), pToolBar);
+     g_object_unref(builder);
+diff --git a/desmume/src/frontend/posix/gtk/meson.build b/desmume/src/frontend/posix/gtk/meson.build
+index 20a31da1..99d6fd1d 100644
+--- a/desmume/src/frontend/posix/gtk/meson.build
++++ b/desmume/src/frontend/posix/gtk/meson.build
+@@ -3,6 +3,12 @@ dep_x11 = dependency('x11')
+ 
+ gtk_dependencies = dependencies + [dep_gtk3, dep_x11]
+ 
++gnome = import('gnome')
++
++gresource = gnome.compile_resources(
++  'gresource', 'desmume.gresource.xml',
++)
++
+ desmume_src = [
+   'avout_pipe_base.cpp',
+   'avout_x264.cpp',
+@@ -17,6 +23,7 @@ desmume_src = [
+   'sdl_3Demu.cpp',
+   'cheatsGTK.cpp',
+   'main.cpp',
++  gresource,
+ ]
+ 
+ # TODO: why do we have to redeclare it here with one more fs level?
+diff --git a/desmume/src/frontend/posix/gtk/toolbar.ui b/desmume/src/frontend/posix/gtk/toolbar.ui
+new file mode 100644
+index 00000000..990e1a2d
+--- /dev/null
++++ b/desmume/src/frontend/posix/gtk/toolbar.ui
+@@ -0,0 +1,34 @@
++<?xml version='1.0' encoding='UTF-8'?>
++<interface>
++  <requires lib='gtk+' version='3.24'/>
++  <object class='GtkBox' id='toolbar'>
++    <child>
++      <object class='GtkToolButton'>
++        <property name='label' translatable='yes'>_Open</property>
++        <property name='icon-name'>document-open</property>
++        <property name='action-name'>app.open</property>
++      </object>
++    </child>
++    <child>
++      <object class='GtkToolButton'>
++        <property name='label' translatable='yes'>_Run</property>
++        <property name='icon-name'>media-playback-start</property>
++        <property name='action-name'>app.run</property>
++      </object>
++    </child>
++    <child>
++      <object class='GtkToolButton'>
++        <property name='label' translatable='yes'>_Pause</property>
++        <property name='icon-name'>media-playback-pause</property>
++        <property name='action-name'>app.pause</property>
++      </object>
++    </child>
++    <child>
++      <object class='GtkToolButton'>
++        <property name='label' translatable='yes'>_Quit</property>
++        <property name='icon-name'>application-exit</property>
++        <property name='action-name'>app.quit</property>
++      </object>
++    </child>
++  </object>
++</interface>
+-- 
+2.31.1
+

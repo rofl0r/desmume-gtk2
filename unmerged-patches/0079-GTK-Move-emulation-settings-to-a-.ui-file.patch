@@ -1,0 +1,276 @@
+From 0e5dec143f8132bed67e51cfc82126ab42cb3a7f Mon Sep 17 00:00:00 2001
+From: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>
+Date: Sat, 19 Dec 2020 03:46:34 +0100
+Subject: [PATCH 079/194] GTK: Move emulation settings to a .ui file
+
+---
+ .../frontend/posix/gtk/desmume.gresource.xml  |   1 +
+ .../frontend/posix/gtk/emulation_settings.ui  | 132 ++++++++++++++++++
+ desmume/src/frontend/posix/gtk/main.cpp       |  93 +++++-------
+ 3 files changed, 168 insertions(+), 58 deletions(-)
+ create mode 100644 desmume/src/frontend/posix/gtk/emulation_settings.ui
+
+diff --git a/desmume/src/frontend/posix/gtk/desmume.gresource.xml b/desmume/src/frontend/posix/gtk/desmume.gresource.xml
+index 7d02489f..783c8c66 100644
+--- a/desmume/src/frontend/posix/gtk/desmume.gresource.xml
++++ b/desmume/src/frontend/posix/gtk/desmume.gresource.xml
+@@ -4,6 +4,7 @@
+     <file preprocess="xml-stripblanks" compressed="true">org.desmume.DeSmuME.svg</file>
+     <file preprocess="xml-stripblanks" compressed="true">main.ui</file>
+     <file preprocess="xml-stripblanks" compressed="true">menu.ui</file>
++    <file preprocess="xml-stripblanks" compressed="true">emulation_settings.ui</file>
+     <file preprocess="xml-stripblanks" compressed="true">graphics.ui</file>
+   </gresource>
+ </gresources>
+diff --git a/desmume/src/frontend/posix/gtk/emulation_settings.ui b/desmume/src/frontend/posix/gtk/emulation_settings.ui
+new file mode 100644
+index 00000000..51b50845
+--- /dev/null
++++ b/desmume/src/frontend/posix/gtk/emulation_settings.ui
+@@ -0,0 +1,132 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<interface>
++  <requires lib="gtk+" version="3.24"/>
++  <object class="GtkAdjustment" id="block-size">
++    <property name="upper">100</property>
++    <property name="step-increment">1</property>
++    <property name="page-increment">5</property>
++  </object>
++  <object class="GtkDialog" id="dialog">
++    <property name="can-focus">False</property>
++    <property name="title" translatable="yes">Emulation Settings</property>
++    <property name="modal">True</property>
++    <property name="type-hint">dialog</property>
++    <child internal-child="vbox">
++      <object class="GtkBox">
++        <property name="can-focus">False</property>
++        <property name="orientation">vertical</property>
++        <property name="spacing">2</property>
++        <child internal-child="action_area">
++          <object class="GtkButtonBox">
++            <property name="can-focus">False</property>
++            <property name="layout-style">end</property>
++            <child>
++              <object class="GtkButton" id="ok">
++                <property name="label" translatable="yes">OK</property>
++                <property name="visible">True</property>
++                <property name="can-focus">True</property>
++                <property name="receives-default">True</property>
++              </object>
++              <packing>
++                <property name="expand">True</property>
++                <property name="fill">True</property>
++                <property name="position">0</property>
++              </packing>
++            </child>
++            <child>
++              <object class="GtkButton" id="cancel">
++                <property name="label" translatable="yes">Cancel</property>
++                <property name="visible">True</property>
++                <property name="can-focus">True</property>
++                <property name="receives-default">True</property>
++              </object>
++              <packing>
++                <property name="expand">True</property>
++                <property name="fill">True</property>
++                <property name="position">1</property>
++              </packing>
++            </child>
++          </object>
++          <packing>
++            <property name="expand">False</property>
++            <property name="fill">False</property>
++            <property name="position">4</property>
++          </packing>
++        </child>
++        <child>
++          <object class="GtkLabel">
++            <property name="visible">True</property>
++            <property name="can-focus">False</property>
++            <property name="label" translatable="yes">CPU mode:
++</property>
++          </object>
++          <packing>
++            <property name="expand">False</property>
++            <property name="fill">True</property>
++            <property name="position">0</property>
++          </packing>
++        </child>
++        <child>
++          <object class="GtkCheckButton" id="use-dynarec">
++            <property name="label" translatable="yes">Use dynamic recompiler</property>
++            <property name="visible">True</property>
++            <property name="can-focus">True</property>
++            <property name="receives-default">False</property>
++            <property name="draw-indicator">True</property>
++          </object>
++          <packing>
++            <property name="expand">False</property>
++            <property name="fill">True</property>
++            <property name="position">1</property>
++          </packing>
++        </child>
++        <child>
++          <object class="GtkLabel">
++            <property name="visible">True</property>
++            <property name="can-focus">False</property>
++            <property name="label" translatable="yes">Block Size (1 - accuracy, 100 - fastest):</property>
++          </object>
++          <packing>
++            <property name="expand">False</property>
++            <property name="fill">True</property>
++            <property name="position">2</property>
++          </packing>
++        </child>
++        <child>
++          <object class="GtkScale">
++            <property name="visible">True</property>
++            <property name="can-focus">True</property>
++            <property name="adjustment">block-size</property>
++            <property name="digits">0</property>
++          </object>
++          <packing>
++            <property name="expand">False</property>
++            <property name="fill">True</property>
++            <property name="position">3</property>
++          </packing>
++        </child>
++        <child>
++          <object class="GtkLabel">
++            <property name="visible">True</property>
++            <property name="can-focus">False</property>
++            <property name="label" translatable="yes">Enabling this will get you 0-50% speedups. It is optional because it
++may still contain small small bugs, due mostly merely to newness,
++which can safely be fixed in time. Furthermore, you may have to
++tune the block size to prevent some games from breaking.
++
++This should not be assumed to be deterministic.</property>
++          </object>
++          <packing>
++            <property name="expand">False</property>
++            <property name="fill">True</property>
++            <property name="position">4</property>
++          </packing>
++        </child>
++      </object>
++    </child>
++    <action-widgets>
++      <action-widget response="-5">ok</action-widget>
++      <action-widget response="-6">cancel</action-widget>
++    </action-widgets>
++  </object>
++</interface>
+diff --git a/desmume/src/frontend/posix/gtk/main.cpp b/desmume/src/frontend/posix/gtk/main.cpp
+index 57a0db6a..03c56b70 100644
+--- a/desmume/src/frontend/posix/gtk/main.cpp
++++ b/desmume/src/frontend/posix/gtk/main.cpp
+@@ -1882,71 +1882,48 @@ static void Modify_JoyKey(GtkWidget* widget, gpointer data)
+ 
+ #ifdef HAVE_JIT
+ 
+-static void EmulationSettingsDialog(GSimpleAction *action, GVariant *parameter, gpointer user_data){
+-	GtkWidget *esDialog;
+-	GtkWidget *esKey;
++static void EmulationSettingsDialog(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
++    GtkDialog *dialog;
++    GtkCheckButton *use_dynarec;
++    GtkAdjustment *block_size;
++
++    GtkBuilder *builder = gtk_builder_new_from_resource("/org/desmume/DeSmuME/emulation_settings.ui");
++    dialog = GTK_DIALOG(gtk_builder_get_object(builder, "dialog"));
++    use_dynarec = GTK_CHECK_BUTTON(gtk_builder_get_object(builder, "use-dynarec"));
++    block_size = GTK_ADJUSTMENT(gtk_builder_get_object(builder, "block-size"));
++    g_object_unref(builder);
+ 
+-	esDialog=gtk_dialog_new_with_buttons("Emulation Settings",
+-			GTK_WINDOW(pWindow),
+-			GTK_DIALOG_MODAL,
+-			"_OK",GTK_RESPONSE_OK,
+-			"_Cancel",GTK_RESPONSE_CANCEL,
+-			NULL);
++    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(use_dynarec), config.use_jit);
++    g_signal_connect(G_OBJECT(use_dynarec), "clicked", G_CALLBACK(ToggleJIT), GINT_TO_POINTER(0));
+ 
+-    esKey=gtk_label_new("CPU Mode:\n");
+-    gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(esDialog))), esKey,TRUE, FALSE, 0);
+-
+-	esKey=gtk_check_button_new_with_label("Use dynamic recompiler");
+-	gtk_toggle_button_set_active((GtkToggleButton*)esKey,config.use_jit);
+-	g_signal_connect(G_OBJECT(esKey),"clicked",G_CALLBACK(ToggleJIT),GINT_TO_POINTER(0));
+-    gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(esDialog))), esKey,TRUE, FALSE, 0);
+-
+-    esKey=gtk_label_new("Block Size (1 - accuracy, 100 - fastest):");
+-    gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(esDialog))), esKey,TRUE, FALSE, 0);
+-
+-    GtkAdjustment* JITBlockSizeAdjustment=(GtkAdjustment*)gtk_adjustment_new(config.jit_max_block_size,1,100,1,5,0);
+-    esKey=gtk_scale_new(GTK_ORIENTATION_HORIZONTAL, JITBlockSizeAdjustment);
+-    gtk_scale_set_digits((GtkScale*)esKey,0);
+-    g_signal_connect(G_OBJECT(JITBlockSizeAdjustment),"value_changed",G_CALLBACK(JITMaxBlockSizeChanged),NULL);
+-    gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(esDialog))), esKey,TRUE, FALSE, 0);
+-
+-    esKey=gtk_label_new(
+-    		"Enabling this will get you 0-50% speedups. It is optional because it\n"
+-    		"may still contain small small bugs, due mostly merely to newness, \n"
+-    		"which can safely be fixed in time. Furthermore, you may have to \n"
+-    		"tune the block size to prevent some games from breaking.\n"
+-    		"\n"
+-    		"This should not be assumed to be deterministic."
+-    		);
+-    gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(esDialog))), esKey,TRUE, FALSE, 0);
+-
+-	gtk_widget_show_all(gtk_dialog_get_content_area(GTK_DIALOG(esDialog)));
+-
+-	bool prev_use_jit=config.use_jit;
+-	int prev_jit_max_block_size=config.jit_max_block_size;
+-
+-	switch (gtk_dialog_run(GTK_DIALOG(esDialog))) {
+-	case GTK_RESPONSE_OK:
+-		CommonSettings.jit_max_block_size=config.jit_max_block_size;
+-		arm_jit_sync();
+-		arm_jit_reset(CommonSettings.use_jit=config.use_jit);
+-		break;
+-	case GTK_RESPONSE_CANCEL:
+-	case GTK_RESPONSE_NONE:
+-		config.use_jit=prev_use_jit;
+-		config.jit_max_block_size=prev_jit_max_block_size;
+-		break;
+-	}
+-	gtk_widget_destroy(esDialog);
++    gtk_adjustment_set_value(block_size, config.jit_max_block_size);
++    g_signal_connect(G_OBJECT(block_size), "value_changed", G_CALLBACK(JITMaxBlockSizeChanged), NULL);
++
++    bool prev_use_jit = config.use_jit;
++    int prev_jit_max_block_size = config.jit_max_block_size;
++
++    switch (gtk_dialog_run(dialog)) {
++    case GTK_RESPONSE_OK:
++        CommonSettings.jit_max_block_size = config.jit_max_block_size;
++        arm_jit_sync();
++        arm_jit_reset(CommonSettings.use_jit = config.use_jit);
++        break;
++    case GTK_RESPONSE_CANCEL:
++    case GTK_RESPONSE_NONE:
++        config.use_jit = prev_use_jit;
++        config.jit_max_block_size = prev_jit_max_block_size;
++        break;
++    }
++    gtk_widget_destroy(GTK_WIDGET(dialog));
+ 
+ }
+ 
+-static void JITMaxBlockSizeChanged(GtkAdjustment* adj,void * nullPtr){
+-	config.jit_max_block_size=(int)gtk_adjustment_get_value(adj);
++static void JITMaxBlockSizeChanged(GtkAdjustment* adj, gpointer data) {
++    config.jit_max_block_size = (int)gtk_adjustment_get_value(adj);
+ }
+ 
+-static void ToggleJIT(){
+-	config.use_jit=!config.use_jit;
++static void ToggleJIT() {
++    config.use_jit = !config.use_jit;
+ }
+ 
+ #endif
+-- 
+2.31.1
+

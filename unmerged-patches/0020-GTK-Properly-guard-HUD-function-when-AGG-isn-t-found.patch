@@ -1,0 +1,30 @@
+From 5629855183ab4c1ee1c44a73a7a2b5b53955a752 Mon Sep 17 00:00:00 2001
+From: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>
+Date: Tue, 1 Sep 2020 03:10:02 +0200
+Subject: [PATCH 020/194] =?UTF-8?q?GTK:=20Properly=20guard=20HUD=20functio?=
+ =?UTF-8?q?n=20when=20AGG=20isn=E2=80=99t=20found?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ desmume/src/frontend/posix/gtk/main.cpp | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/desmume/src/frontend/posix/gtk/main.cpp b/desmume/src/frontend/posix/gtk/main.cpp
+index 66cb8324..31f5f52b 100644
+--- a/desmume/src/frontend/posix/gtk/main.cpp
++++ b/desmume/src/frontend/posix/gtk/main.cpp
+@@ -170,7 +170,9 @@ static void Modify_PriInterpolation(GSimpleAction *action, GVariant *parameter,
+ static void Modify_Interpolation(GSimpleAction *action, GVariant *parameter, gpointer user_data);
+ static void SetOrientation(GSimpleAction *action, GVariant *parameter, gpointer user_data);
+ static void ToggleLayerVisibility(GSimpleAction *action, GVariant *parameter, gpointer user_data);
++#ifdef HAVE_LIBAGG
+ static void ToggleHudDisplay(GtkToggleAction* action, gpointer data);
++#endif
+ #ifdef DESMUME_GTK_FIRMWARE_BROKEN
+ static void SelectFirmwareFile(GSimpleAction *action, GVariant *parameter, gpointer user_data);
+ #endif
+-- 
+2.31.1
+

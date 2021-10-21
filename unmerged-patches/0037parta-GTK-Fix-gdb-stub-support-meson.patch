@@ -1,0 +1,43 @@
+From cb494169527f21da5dbc6536875dc139486222b6 Mon Sep 17 00:00:00 2001
+From: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>
+Date: Sat, 3 Oct 2020 01:47:52 +0200
+Subject: [PATCH 037/194] GTK: Fix gdb stub support
+
+I never tried to build this codepath, this is now done.
+
+Fixes #381.
+---
+ desmume/src/frontend/posix/gtk/main.cpp | 10 ++++++----
+ 2 files changed, 7 insertions(+), 4 deletions(-)
+
+diff --git a/desmume/src/frontend/posix/gtk/main.cpp b/desmume/src/frontend/posix/gtk/main.cpp
+index 9ef85ef5..b1e090ff 100644
+--- a/desmume/src/frontend/posix/gtk/main.cpp
++++ b/desmume/src/frontend/posix/gtk/main.cpp
+@@ -104,6 +104,11 @@ VideoFilter* video;
+ 
+ desmume::config::Config config;
+ 
++#ifdef GDB_STUB
++gdbstub_handle_t arm9_gdb_stub = NULL;
++gdbstub_handle_t arm7_gdb_stub = NULL;
++#endif
++
+ enum {
+     MAIN_BG_0 = 0,
+     MAIN_BG_1,
+@@ -3864,10 +3869,7 @@ common_gtk_main(GApplication *app, gpointer user_data)
+      */
+ #ifdef GDB_STUB
+     gdbstub_mutex_init();
+-    
+-    gdbstub_handle_t arm9_gdb_stub = NULL;
+-    gdbstub_handle_t arm7_gdb_stub = NULL;
+-    
++
+     if ( my_config->arm9_gdb_port > 0) {
+         arm9_gdb_stub = createStub_gdb( my_config->arm9_gdb_port,
+                                          &NDS_ARM9,
+-- 
+2.31.1
+

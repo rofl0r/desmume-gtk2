@@ -1,0 +1,27 @@
+From 0896b99b49435778b1e78dd5b626cea33a425843 Mon Sep 17 00:00:00 2001
+From: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>
+Date: Tue, 22 Sep 2020 12:04:22 +0200
+Subject: [PATCH 032/194] README.LIN: Direct to release builds by default
+
+Fixes #376.
+---
+ desmume/README.LIN | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/desmume/README.LIN b/desmume/README.LIN
+index 1d204dc3..30ae9ac9 100644
+--- a/desmume/README.LIN
++++ b/desmume/README.LIN
+@@ -14,7 +14,8 @@ DeSmuME provides another interface based on libglade, to use
+ 
+ * http://glade.gnome.org/
+ 
+-To build, first cd to src/frontend/posix and run `meson build`
++To build, first cd to src/frontend/posix and run
++`meson build --buildtype=release`
+ 
+ Then build the program by running `ninja -C build`
+ 
+-- 
+2.31.1
+

@@ -1,0 +1,35 @@
+From 0c9a8a528200c6b8fed1b0c22db7a3c70110f151 Mon Sep 17 00:00:00 2001
+From: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>
+Date: Sun, 30 Aug 2020 01:00:16 +0200
+Subject: [PATCH 017/194] GTK: Replace deprecated gdk_window_get_pointer() with
+ gdk_window_get_device_position()
+
+---
+ desmume/src/frontend/posix/gtk/main.cpp | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/desmume/src/frontend/posix/gtk/main.cpp b/desmume/src/frontend/posix/gtk/main.cpp
+index 86476864..72cc6a81 100644
+--- a/desmume/src/frontend/posix/gtk/main.cpp
++++ b/desmume/src/frontend/posix/gtk/main.cpp
+@@ -1797,7 +1797,7 @@ static gboolean Stylus_Move(GtkWidget *w, GdkEventMotion *e, gpointer data)
+ 
+     if(click) {
+         if(e->is_hint)
+-            gdk_window_get_pointer(gtk_widget_get_window(w), &x, &y, &state);
++            gdk_window_get_device_position(gtk_widget_get_window(w), e->device, &x, &y, &state);
+         else {
+             x= (gint)e->x;
+             y= (gint)e->y;
+@@ -1833,7 +1833,7 @@ static gboolean Stylus_Press(GtkWidget * w, GdkEventButton * e,
+     }
+ 
+     if (e->button == 1) {
+-        gdk_window_get_pointer(gtk_widget_get_window(w), &x, &y, &state);
++        gdk_window_get_device_position(gtk_widget_get_window(w), e->device, &x, &y, &state);
+ 
+         if(state & GDK_BUTTON1_MASK) {
+ #ifdef HAVE_LIBAGG
+-- 
+2.31.1
+

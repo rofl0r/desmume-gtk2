@@ -1,0 +1,24 @@
+From 71ed1ca0730aed78c11f7ab3f9b9021ba4de74d2 Mon Sep 17 00:00:00 2001
+From: Anish Moorthy <anlsh@protonmail.com>
+Date: Tue, 14 Sep 2021 20:06:37 -0400
+Subject: [PATCH 175/194] Redraw screen in after loading state from file
+
+---
+ desmume/src/frontend/posix/gtk/main.cpp | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/desmume/src/frontend/posix/gtk/main.cpp b/desmume/src/frontend/posix/gtk/main.cpp
+index d4aed385..c393c60f 100644
+--- a/desmume/src/frontend/posix/gtk/main.cpp
++++ b/desmume/src/frontend/posix/gtk/main.cpp
+@@ -712,6 +712,7 @@ static void LoadStateDialog(GSimpleAction *action, GVariant *parameter, gpointer
+             gtk_widget_destroy(pDialog);
+         } else {
+             g_simple_action_set_enabled(G_SIMPLE_ACTION(g_action_map_lookup_action(G_ACTION_MAP(pApp), "run")), TRUE);
++            RedrawScreen();
+         }
+ 
+         g_free(sPath);
+-- 
+2.31.1
+

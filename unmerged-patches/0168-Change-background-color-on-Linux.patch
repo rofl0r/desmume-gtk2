@@ -1,0 +1,55 @@
+From 5057299fa5cbadbfd25d58a3be44fcbcc41fe27c Mon Sep 17 00:00:00 2001
+From: Anish Moorthy <anlsh@protonmail.com>
+Date: Mon, 13 Sep 2021 23:26:19 -0400
+Subject: [PATCH 168/194] Change background color on Linux
+
+---
+ desmume/src/frontend/posix/gtk/main.cpp | 9 +++++++++
+ desmume/src/frontend/posix/gtk/main.ui  | 2 +-
+ 2 files changed, 10 insertions(+), 1 deletion(-)
+
+diff --git a/desmume/src/frontend/posix/gtk/main.cpp b/desmume/src/frontend/posix/gtk/main.cpp
+index 82bb1cf7..18c678f9 100644
+--- a/desmume/src/frontend/posix/gtk/main.cpp
++++ b/desmume/src/frontend/posix/gtk/main.cpp
+@@ -507,6 +507,7 @@ static GtkWidget *pWindow;
+ static GtkWidget *pToolBar;
+ static GtkWidget *pStatusBar;
+ static GtkWidget *pDrawingArea;
++static GtkWidget *pContentBox;
+ 
+ struct nds_screen_t {
+     guint gap_size;
+@@ -3013,8 +3014,16 @@ common_gtk_main(GApplication *app, gpointer user_data)
+     pToolBar = GTK_WIDGET(gtk_builder_get_object(builder, "toolbar"));
+     pDrawingArea = GTK_WIDGET(gtk_builder_get_object(builder, "drawing-area"));
+     pStatusBar = GTK_WIDGET(gtk_builder_get_object(builder, "status-bar"));
++    pContentBox = GTK_WIDGET(gtk_builder_get_object(builder, "content-box"));
+     g_object_unref(builder);
+ 
++    /* Set colors for content box background and status bar text */
++    GdkRGBA color_black = { 0.0, 0.0, 0.0, 1.0 };
++    gtk_widget_override_background_color(pContentBox, GTK_STATE_FLAG_NORMAL, &color_black);
++
++    GdkRGBA color_soft_gray = { 0.8, 0.8, 0.8, 1.0 };
++    gtk_widget_override_color(pStatusBar, GTK_STATE_FLAG_NORMAL, &color_soft_gray);
++
+     gtk_application_add_window(GTK_APPLICATION(app), GTK_WINDOW(pWindow));
+ 
+     g_signal_connect(G_OBJECT(pWindow), "destroy", G_CALLBACK(DoQuit), NULL);
+diff --git a/desmume/src/frontend/posix/gtk/main.ui b/desmume/src/frontend/posix/gtk/main.ui
+index 8d69fe3e..a00955f3 100644
+--- a/desmume/src/frontend/posix/gtk/main.ui
++++ b/desmume/src/frontend/posix/gtk/main.ui
+@@ -7,7 +7,7 @@
+     <property name="resizable">True</property>
+     <property name="show-menubar">True</property>
+     <child>
+-      <object class="GtkBox">
++      <object class="GtkBox" id="content-box">
+         <property name="visible">True</property>
+         <property name="can-focus">False</property>
+         <property name="orientation">vertical</property>
+-- 
+2.31.1
+

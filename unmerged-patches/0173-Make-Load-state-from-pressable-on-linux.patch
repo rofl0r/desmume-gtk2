@@ -1,0 +1,25 @@
+From 98a1c58db73ee8f227a104d11c2d065057a989e7 Mon Sep 17 00:00:00 2001
+From: Anish Moorthy <anlsh@protonmail.com>
+Date: Tue, 14 Sep 2021 19:05:32 -0400
+Subject: [PATCH 173/194] Make "Load state from" pressable on linux
+
+---
+ desmume/src/frontend/posix/gtk/main.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/desmume/src/frontend/posix/gtk/main.cpp b/desmume/src/frontend/posix/gtk/main.cpp
+index d3c7f18e..8c000142 100644
+--- a/desmume/src/frontend/posix/gtk/main.cpp
++++ b/desmume/src/frontend/posix/gtk/main.cpp
+@@ -201,7 +201,7 @@ static const GActionEntry app_entries[] = {
+     { "pause",         Pause },
+     { "reset",         Reset },
+     { "save_state_to",   SaveStateDialog },
+-    { "loadstatefrom", LoadStateDialog },
++    { "load_state_from", LoadStateDialog },
+     { "savestate",     MenuSave, "u" },
+     { "loadstate",     MenuLoad, "u" },
+     { "importbackup",  ImportBackupMemoryDialog },
+-- 
+2.31.1
+

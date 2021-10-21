@@ -1,0 +1,42 @@
+From a8e581dcf328c020c2b7d42229b2f3f18d3dee0e Mon Sep 17 00:00:00 2001
+From: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>
+Date: Wed, 4 Nov 2020 11:42:38 +0100
+Subject: [PATCH 049/194] GTK: Also rename the icon like the desktop file
+
+---
+ desmume/src/frontend/posix/gtk/meson.build                      | 2 +-
+ desmume/src/frontend/posix/gtk/org.desmume.DeSmuME.desktop      | 2 +-
+ .../frontend/posix/gtk/{DeSmuME.svg => org.desmume.DeSmuME.svg} | 0
+ 3 files changed, 2 insertions(+), 2 deletions(-)
+ rename desmume/src/frontend/posix/gtk/{DeSmuME.svg => org.desmume.DeSmuME.svg} (100%)
+
+diff --git a/desmume/src/frontend/posix/gtk/meson.build b/desmume/src/frontend/posix/gtk/meson.build
+index 6727f481..1034a967 100644
+--- a/desmume/src/frontend/posix/gtk/meson.build
++++ b/desmume/src/frontend/posix/gtk/meson.build
+@@ -37,5 +37,5 @@ executable('desmume',
+ 
+ install_data('org.desmume.DeSmuME.desktop', install_dir: join_paths(get_option('datadir'), 'applications'))
+ install_data('org.desmume.DeSmuME.metainfo.xml', install_dir: join_paths(get_option('datadir'), 'metainfo'))
+-install_data('DeSmuME.svg', install_dir: join_paths(get_option('datadir'), 'pixmaps'))
++install_data('org.desmume.DeSmuME.svg', install_dir: join_paths(get_option('datadir'), 'pixmaps'))
+ install_data('doc/desmume.1', install_dir: join_paths(get_option('datadir'), 'man', 'man1'))
+diff --git a/desmume/src/frontend/posix/gtk/org.desmume.DeSmuME.desktop b/desmume/src/frontend/posix/gtk/org.desmume.DeSmuME.desktop
+index cae4c8eb..cf2b87c1 100644
+--- a/desmume/src/frontend/posix/gtk/org.desmume.DeSmuME.desktop
++++ b/desmume/src/frontend/posix/gtk/org.desmume.DeSmuME.desktop
+@@ -5,6 +5,6 @@ Name=DeSmuME (Gtk)
+ Comment=Nintento DS emulator
+ TryExec=desmume
+ Exec=desmume
+-Icon=DeSmuME
++Icon=org.desmume.DeSmuME
+ Categories=GNOME;GTK;Game;Emulator;
+ MimeType=application/x-nintendo-ds-rom;
+diff --git a/desmume/src/frontend/posix/gtk/DeSmuME.svg b/desmume/src/frontend/posix/gtk/org.desmume.DeSmuME.svg
+similarity index 100%
+rename from desmume/src/frontend/posix/gtk/DeSmuME.svg
+rename to desmume/src/frontend/posix/gtk/org.desmume.DeSmuME.svg
+-- 
+2.31.1
+
