@@ -20,7 +20,7 @@ jobs:
         uses: microsoft/setup-msbuild@v1.1
         with:
           msbuild-architecture: x86
-          vs-version: '[16.4,16.5]'
+          vs-version: '[16.4,16.5)'
 
       - name: Build solution
         run: msbuild 'desmume/src/frontend/windows/DeSmuME.sln' /p:configuration=${{ matrix.configuration }} /p:platform=${{ matrix.platform }}
