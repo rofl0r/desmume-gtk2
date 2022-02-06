@@ -8,18 +8,13 @@ jobs:
   build-sln:
     runs-on: windows-latest
 
-    strategy:
-      matrix:
-        configuration: [Release]
-        platform: [x86]
-
     steps:
       - uses: actions/checkout@v2
 
       - name: Setup MSBuild.exe
         uses: microsoft/setup-msbuild@v1.1
         with:
-          msbuild-architecture: x86
+          msbuild-architecture: x64
 
       - name: Build solution
-        run: msbuild 'desmume/src/frontend/windows/DeSmuME.sln' /p:configuration=${{ matrix.configuration }} /p:platform=${{ matrix.platform }}
+        run: msbuild 'desmume/src/frontend/windows/DeSmuME.sln' /p:configuration=Release /p:platform=x64
