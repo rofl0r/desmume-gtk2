@@ -86,7 +86,7 @@
 	<ItemDefinitionGroup>
 
 		<PreBuildEvent>
-			<Command>"%windir%\Sysnative\cscript" /nologo /E:JScript "defaultconfig\make_scmrev.h.js"</Command>
+			<Command>"%windir%\system32\cscript" /nologo /E:JScript "defaultconfig\make_scmrev.h.js"</Command>
 		</PreBuildEvent>
 
 		<ClCompile>
