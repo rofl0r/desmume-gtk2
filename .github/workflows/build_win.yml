@@ -1,0 +1,20 @@
+name: build desmume windows solution
+
+on:
+  - push
+  - pull_request
+
+jobs:
+  build-sln:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup MSBuild.exe
+        uses: microsoft/setup-msbuild@v1.1
+        with:
+          msbuild-architecture: x64
+
+      - name: Build solution
+        run: msbuild 'desmume/src/frontend/windows/DeSmuME.sln' /p:configuration=Release /p:platform=x64
