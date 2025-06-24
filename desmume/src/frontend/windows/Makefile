@@ -25,7 +25,7 @@ CPPFLAGS = -DMINGW_HAS_SECURE_API \
 
 CXXFLAGS = -I. -I../.. -I../../frontend/modules/osd/agg \
   -Iagg/include -Iwinpcap -Idirectx -Ilua/include \
-  -fpermissive -fms-extensions -Wno-write-strings -std=c++11 $(OPT)
+  -fpermissive -fms-extensions -Wno-write-strings -std=gnu++03 $(OPT)
 
 CFLAGS=$(OPT)
 
