@@ -63,7 +63,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: install dependencies
-        run: sudo apt update && sudo apt install mingw-w64-i686-dev
+        run: sudo apt update && sudo apt install mingw-w64 mingw-w64-i686-dev
 
       - name: buildit
         run: |
