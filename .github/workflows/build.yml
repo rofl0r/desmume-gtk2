@@ -68,7 +68,7 @@ jobs:
       - name: buildit
         run: |
           cd desmume/src/frontend/windows/
-          echo "CFLAGS=-fstrength-reduce -fthread-jumps -fcse-follow-jumps -fcse-skip-blocks -frerun-cse-after-loop -fexpensive-optimizations -fforce-addr -fomit-frame-pointer -ffast-math -march=pentium4 -mtune=pentium4 -mmmx -msse2" > config.mak
+          echo "OPT=-fstrength-reduce -fthread-jumps -fcse-follow-jumps -fcse-skip-blocks -frerun-cse-after-loop -fexpensive-optimizations -fforce-addr -fomit-frame-pointer -ffast-math -march=pentium4 -mtune=pentium4 -mmmx -msse2" > config.mak
           make -j8
           mkdir /tmp/DeSmuME
           cp desmume.exe /tmp/DeSmuME
